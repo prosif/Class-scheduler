@@ -1,16 +1,32 @@
 table{
     margin: 5%;
 }
+
 td{
     height: 60px;
     width: 200px;
     text-align: center;
     border: 1px solid;
 }
+
 .table-cell:hover{
     cursor: pointer;
 }
+
 button{
     position: relative;
     left: 46%;
+}
+
+ul{
+	width: 20%;
+	float: left;
+}
+
+li{
+	list-style-type: none;
+}
+
+div{
+	clear: both;
 }

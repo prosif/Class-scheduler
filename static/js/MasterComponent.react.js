@@ -5,6 +5,7 @@ import TeacherTimeTable from './TeacherTimeTable.react.js';
 import RoomTimeTable from './RoomTimeTable.react.js';
 import TeachersTable from './TeachersTable.react.js';
 import TimesTable from './TimesTable.react.js';
+import DataForm from './DataForm.react.js';
 
 var MasterComponent = React.createClass({
     getInitialState: function(){
@@ -228,6 +229,7 @@ var MasterComponent = React.createClass({
         return (
             <div>
                 <div>
+                    <DataForm teachers={this.state.teachers} times={this.state.times} rooms={this.state.rooms} classes={this.state.classes} />
                     <TeachersTable onCreate={this.onCreateTeacherConstraint} onRemove={this.onRemoveTeacherConstraint} classes={this.state.classes} teachers={this.state.teachers} />
                     <RoomsTable onCreate={this.onCreateRoomConstraint} onRemove={this.onRemoveRoomConstraint} classes={this.state.classes} rooms={this.state.rooms} />
                     <TimesTable onCreate={this.onCreateTimeConstraint} onRemove={this.onRemoveTimeConstraint} classes={this.state.classes} times={this.state.times} />
