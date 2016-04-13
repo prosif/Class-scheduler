@@ -1,0 +1,849 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>
+            Class Scheduler
+        </title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.7/react.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.7/react-dom.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.5/marked.min.js"></script> 
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.22/require.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+        <style>
+            td{
+                height: 60px;
+                width: 200px;
+                text-align: center;
+                border: 1px solid;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="content"></div>
+        <script type="text/babel">
+
+            var TeacherMenu = React.createClass({
+                getInitialState: function(){
+                    return {
+                        selectedTeacher: "",
+                        restrictionType: "",
+                        restrictionValue: ""
+                    }
+                },
+
+                handleTeacherSelect: function(e){
+                    this.setState({selectedTeacher: e.target.value});
+                },
+
+                handleRestrictionChange: function(e){
+                    this.setState({restrictionType: e.target.value});
+                },
+
+                handleConstraintChange: function(e){
+                    this.setState({restrictionValue: e.target.value});
+                },
+
+                onCreateConstraint: function(){
+                    if(this.state.restrictionType && this.state.restrictionValue && this.state.selectedTeacher){
+                        this.props.onCreateConstraint(this.state);
+                    }
+                },
+
+                render: function(){
+                    var options;
+                    var teacherOptions = this.props.teachers.map(function(teacher){
+                        return <option key={teacher.name} value={teacher.name}>{teacher.name}</option>;
+                    });
+
+                    if(this.state.restrictionType.indexOf("time") > -1){
+                        options =  this.props.times.map(function(time){
+                            return <option value={time.time} key={time.time}>{time.time}</option>;
+                        });
+                    }
+                    else if(this.state.restrictionType.indexOf("class") > -1){
+                        options =  this.props.classes.map(function(_class){
+                            return <option value={_class.class} key={_class.class}>{_class.class}</option>;
+                        });
+                    }
+                    else{
+                        options = this.props.rooms.map(function(room){
+                            return <option value={room.room} key={room.room}>{room.room}</option>;
+                        });
+                    }
+                
+                    teacherOptions.unshift(<option key="" disabled="disabled" value="">Select a teacher</option>);
+                    options.unshift(<option key="" disabled="disabled" value="">Select...</option>);
+                    return (
+                      <div>
+                        <select onChange={this.handleTeacherSelect} value={this.state.selectedTeacher}>
+                          {teacherOptions}
+                        </select> 
+                        <select onChange={this.handleRestrictionChange} value={this.state.restrictionType}>
+                            <option value="" disabled="disabled">Select...</option>
+                            <option value="must teach at time">must teach at time</option>
+                            <option value="must not teach at time">must not teach at time</option>
+                            <option value="must teach in room">must teach in room</option>
+                            <option value="must not teach in room">must not teach in room</option>
+                            <option value="must teach class">must teach class</option>
+                            <option value="must not teach class">must not teach class</option>
+                        </select>
+                        <select onChange={this.handleConstraintChange} value={this.state.restrictionValue}>
+                            {options}
+                        </select>
+                        <div onClick={this.onCreateConstraint}>Create constraint</div>
+                      </div>
+                    
+                    );
+                }
+            });
+            
+            var ClassMenu = React.createClass({
+                getInitialState: function(){
+                    return {
+                        selectedClass: "",
+                        restrictionType: "",
+                        restrictionValue: ""
+                    }
+                },
+
+                handleClassSelect: function(e){
+                    this.setState({selectedClass: e.target.value});
+                },
+
+                handleRestrictionChange: function(e){
+                    this.setState({restrictionType: e.target.value});
+                },
+
+                handleConstraintChange: function(e){
+                    this.setState({restrictionValue: e.target.value});
+                },
+
+                onCreateConstraint: function(){
+                    if(this.state.restrictionType && this.state.restrictionValue && this.state.selectedClass){
+                        this.props.onCreateConstraint(this.state);
+                    }
+                },
+
+                render: function(){
+                    var options;
+
+                    var classOptions = this.props.classes.map(function(_class){
+                        return <option value={_class.class} key={_class.class}>{_class.class}</option>;
+                    });
+                    
+                    if(this.state.restrictionType.indexOf("time") > -1){
+                        options =  this.props.times.map(function(time){
+                            return <option value={time.time} key={time.time}>{time.time}</option>;
+                        });
+                    }
+                    else if(this.state.restrictionType.indexOf("room") > -1){
+                        options =  this.props.rooms.map(function(room){
+                            return <option value={room.room} key={room.room}>{room.room}</option>;
+                        });
+                    }
+                    else{
+                        options = this.props.teachers.map(function(teacher){
+                            return <option key={teacher.name} value={teacher.name}>{teacher.name}</option>;
+                        });
+                    }
+                                    
+                    classOptions.unshift(<option key="" disabled="disabled" value="">Select a class</option>);
+                    options.unshift(<option key="" disabled="disabled" value="">Select...</option>);
+                    
+                    return (
+                      <div>
+                        <select onChange={this.handleClassSelect} value={this.state.selectedClass}>
+                          {classOptions}
+                        </select> 
+                        <select onChange={this.handleRestrictionChange} value={this.state.restrictionType}>
+                            <option value="" disabled="disabled">Select...</option>
+                            <option value="must be taught at time">must be taught at time</option>
+                            <option value="must not be taught at time">must not be taught at time</option>
+                            <option value="must be taught in room">must be taught in room</option>
+                            <option value="must not be taught in room">must not be taught in room</option>
+                            <option value="must be taught by">must be taught by</option>
+                            <option value="must not be taught by">must not be taught by</option>
+                        </select>
+                        <select onChange={this.handleConstraintChange} value={this.state.restrictionValue}>
+                            {options}
+                        </select>
+                        <div onClick={this.onCreateConstraint}>Create constraint</div>
+                      </div>
+                    
+                    );
+                }
+
+            });
+            
+            var RoomMenu = React.createClass({
+                getInitialState: function(){
+                    return {
+                        selectedRoom: "",
+                        restrictionType: "",
+                        restrictionValue: ""
+                    }
+                },
+
+                handleRoomSelect: function(e){
+                    this.setState({selectedRoom: e.target.value});
+                },
+
+                handleRestrictionChange: function(e){
+                    this.setState({restrictionType: e.target.value});
+                },
+
+                handleConstraintChange: function(e){
+                    this.setState({restrictionValue: e.target.value});
+                },
+
+                onCreateConstraint: function(){
+                    this.props.onCreateConstraint(this.state);
+                },
+
+                render: function(){
+                    var options;
+                    var roomOptions = this.props.rooms.map(function(room){
+                        return <option key={room.room} value={room.room}>{room.room}</option>;
+                    });
+
+                    if(this.state.restrictionType.indexOf("time") > -1){
+                        options =  this.props.times.map(function(time){
+                            return <option value={time.time} key={time.time}>{time.time}</option>;
+                        });
+                    }
+                    else{
+                        options =  this.props.classes.map(function(_class){
+                            return <option value={_class.class} key={_class.class}>{_class.class}</option>;
+                        });
+                    }
+                
+                    roomOptions.unshift(<option key="" disabled="disabled" value="">Select a room</option>);
+                    options.unshift(<option key="" disabled="disabled" value="">Select...</option>);
+                    return (
+                      <div>
+                        <select onChange={this.handleRoomSelect} value={this.state.selectedRoom}>
+                          {roomOptions}
+                        </select> 
+                        <select onChange={this.handleRestrictionChange} value={this.state.restrictionType}>
+                            <option value="is available at time">is available at time</option>
+                            <option value="is not available at time">is not available at time</option>
+                            <option value="is required for class">is required for class</option>
+                            <option value="is not available for class">is not available for class</option>
+                        </select>
+                        <select onChange={this.handleConstraintChange} value={this.state.restrictionValue}>
+                            {options}
+                        </select>
+                        <div onClick={this.onCreateConstraint}>Create constraint</div>
+                      </div>
+                    
+                    );
+                }
+            });
+
+            var InputForm = React.createClass({
+                getInitialState: function(){
+                    return {
+                        teacherConstraints: {},
+                        timeConstraints: {},
+                        classConstraints: {},
+                        roomConstraints: {},
+                        selectedConstraint: ""
+                    }
+                },
+
+                onConstraintChange: function(e){
+                    this.setState({selectedConstraint: e.target.value});
+                },
+
+                renderTeacherMenu: function(){
+                    return(
+                        <TeacherMenu 
+                            onCreateConstraint={this.props.onCreateTeacherConstraint} 
+                            rooms={this.props.rooms} 
+                            times={this.props.times} 
+                            classes={this.props.classes} 
+                            teachers={this.props.teachers} 
+                        />
+                    );
+                },
+                
+                renderClassMenu: function(){
+                    return(
+                        <div>
+                            <ClassMenu 
+                                onCreateConstraint={this.props.onCreateClassConstraint} 
+                                rooms={this.props.rooms} 
+                                times={this.props.times} 
+                                classes={this.props.classes} 
+                                teachers={this.props.teachers} 
+                            />
+                        </div>
+                    );
+                },
+                
+                renderRoomMenu: function(){
+                    return(
+                        <div>
+                            <RoomMenu 
+                                onCreateConstraint={this.props.onCreateRoomConstraint} 
+                                rooms={this.props.rooms} 
+                                times={this.props.times} 
+                                classes={this.props.classes} 
+                                teachers={this.props.teachers} 
+                            />
+                        </div>
+                    );
+                },
+
+                render: function(){
+                    var detailedConstraintMenu;
+                    switch(this.state.selectedConstraint){
+                        case "teacher":
+                            detailedConstraintMenu = this.renderTeacherMenu();
+                            break;
+                        case "class":
+                            detailedConstraintMenu = this.renderClassMenu();
+                            break;
+                        case "room":
+                            detailedConstraintMenu = this.renderRoomMenu();
+                            break;
+                    }
+                            
+                    return (
+                      <div>
+                        <h2>Add a constraint</h2>
+                        <div>
+                          <select value={this.state.selectedConstraint} onChange={this.onConstraintChange} name="constraint-list" form="constraint-form">
+                            <option value="" disabled="disabled">Select a constraint</option>
+                              <option value="teacher">Teacher</option>
+                              <option value="class">Class</option>
+                              <option value="room">Room</option>
+                          </select>
+                        </div>
+                        {detailedConstraintMenu}
+                      </div>
+                    );
+                }
+            });
+
+            var ConstraintList = React.createClass({
+                onGenerate: function(){
+                    var allConstraints = this.props.teacherConstraints.concat(this.props.roomConstraints).concat(this.props.classConstraints);
+                    console.log(allConstraints);
+                    $.ajax({
+                        type: 'POST',
+                        url: 'http://localhost:5000/generate',
+                        data: {
+                            "teachers": JSON.stringify(this.props.teachers), 
+                            "classes": JSON.stringify(this.props.classes), 
+                            "rooms": JSON.stringify(this.props.rooms), 
+                            "times": JSON.stringify(this.props.times), 
+                            "teacher_constraints": JSON.stringify(this.props.teacherConstraints),
+                            "class_constraints": JSON.stringify(this.props.classConstraints), 
+                            "room_constraints": JSON.stringify(this.props.roomConstraints)
+                        },
+                        success: function(response){
+                            this.props.onGenerateSuccess(JSON.parse(response));
+                        }.bind(this),
+                    });
+                },
+
+                render: function(){
+                    var teacherConstraints = this.props.teacherConstraints.map(function(constraint){
+                        return <li key={constraint.selectedTeacher+constraint.restrictionType+constraint.restrictionValue}>{constraint.selectedTeacher} {constraint.restrictionType} {constraint.restrictionValue}</li>;
+                    });
+                    var roomConstraints = this.props.roomConstraints.map(function(constraint){
+                        return <li key={constraint.selectedRoom+constraint.restrictionType+constraint.restrictionValue}>{constraint.selectedRoom} {constraint.restrictionType} {constraint.restrictionValue}</li>;
+                    });
+                    var classConstraints = this.props.classConstraints.map(function(constraint){
+                        return <li onClick={this.props.onDeleteClassConstraint} key={constraint.selectedClass+constraint.restrictionType+constraint.restrictionValue}>{constraint.selectedClass} {constraint.restrictionType} {constraint.restrictionValue}</li>;
+                    }.bind(this));
+
+                    return(
+                        <div>
+                            <h3>
+                                Constraints
+                            </h3>
+                            <ul>
+                                {teacherConstraints}
+                            </ul>
+                            <ul>
+                                {roomConstraints}
+                            </ul>
+                            <ul>
+                                {classConstraints}
+                            </ul>
+                            <div onClick={this.onGenerate}>Click here to generate schedule with these constraints</div>
+                        </div>
+                    );
+                }
+            });
+
+            var MasterComponent = React.createClass({
+                getInitialState: function(){
+                    return({
+                        teacherConstraints: [],
+                        roomConstraints: [],
+                        classConstraints: [],
+                    });
+                },
+
+                componentDidMount: function(){
+                    $.ajax({
+                        type: 'GET',
+                        url: 'http://localhost:5000/data',
+                        success: function(response){
+                            var parsed = JSON.parse(response);
+                            this.setState({
+                                teachers: parsed.teachers,
+                                classes: parsed.classes,
+                                times: parsed.times,
+                                rooms: parsed.rooms
+                            })
+                        }.bind(this),
+                    });
+
+                },
+
+                onCreateTeacherConstraint: function(constraint){
+                    var currentConstraints = this.state.teacherConstraints;
+                    currentConstraints.push(constraint);
+                    this.setState({teacherConstraints: currentConstraints});
+                },
+                
+                onCreateRoomConstraint: function(constraint){
+                    var currentConstraints = this.state.roomConstraints;
+                    currentConstraints.push(constraint);
+                    this.setState({roomConstraints: currentConstraints});
+                },
+                
+                onCreateClassConstraint: function(constraint){
+                    var currentConstraints = this.state.classConstraints;
+                    currentConstraints.push(constraint);
+                    this.setState({classConstraints: currentConstraints});
+                },
+
+                onDeleteClassConstraint: function(constraint){
+                    console.log("Delete");
+                },
+
+                onGenerateSuccess: function(schedule){
+                    this.setState({
+                       completeSchedule: schedule
+                    });
+                },
+                
+                render: function(){
+                    /*var MWF8am, MWF9am, MWF10am, MWF11am, MWF12pm, MWF1pm, MWF2pm, MWF3pm, MWF4pm, MWF5pm,
+                    TTH8am, TTH9am, TTH10am, TTH11am, TTH12pm, TTH1pm, TTH2pm, TTH3pm, TTH4pm, TTH5pm;
+                    var scheduleDisplay, table;
+                    if(!this.state.teachers || !this.state.classes || !this.state.rooms || !this.state.times){
+                        return <div className="loading" />
+                    }
+
+                    if(this.state.completeSchedule){
+                        scheduleDisplay = Object.keys(this.state.completeSchedule).map(function(thing){
+                            var result = this.state.completeSchedule[thing],
+                                resultClass = result.class,
+                                resultTeacher = result.teacher,
+                                resultTime = result.time,
+                                resultRoom = result.room,
+                                resultData = resultClass + " " + resultTeacher + " " + resultRoom;
+                            switch(result.time){
+                                case "8:00am M W F":
+                                    if(MWF8am){
+                                        MWF8am = MWF8am + " " + resultData;
+                                    }
+                                    else{
+                                        MWF8am = resultData;
+                                    }
+                                    break;
+                                case "9:00am M W F":
+                                    if(MWF9am){
+                                        MWF9am = MWF9am + " " + resultData;
+                                    }
+                                    else{
+                                        MWF9am = resultData;
+                                    }
+                                    break;
+                                case "10:00am M W F":
+                                    if(MWF10am){
+                                        MWF10am = MWF10am + " " + resultData;
+                                    }
+                                    else{
+                                        MWF10am = resultData;
+                                    }
+                                    break;
+                                case "11:00am M W F":
+                                    if(MWF11am){
+                                        MWF11am = MWF11am + " " + resultData;
+                                    }
+                                    else{
+                                        MWF11am = resultData;
+                                    }
+                                    break;
+                                case "12:00pm M W F":
+                                    if(MWF12pm){
+                                        MWF12pm = MWF12pm + " " + resultData;
+                                    }
+                                    else{
+                                        MWF12pm = resultData;
+                                    }
+                                    break;
+                                case "1:00pm M W F":
+                                    if(MWF1pm){
+                                        MWF1pm = MWF1pm + " " + resultData;
+                                    }
+                                    else{
+                                        MWF1pm = resultData;
+                                    }
+                                    break;
+                                case "2:00pm M W F":
+                                    if(MWF2pm){
+                                        MWF2pm = MWF2pm + " " + resultData;
+                                    }
+                                    else{
+                                        MWF2pm = resultData;
+                                    }
+                                    break;
+                                case "3:00pm M W F":
+                                    if(MWF3pm){
+                                        MWF3pm = MWF3pm + " " + resultData;
+                                    }
+                                    else{
+                                        MWF3pm = resultData;
+                                    }
+                                    break;
+                                case "4:00pm M W F":
+                                    if(MWF4pm){
+                                        MWF4pm = MWF4pm + " " + resultData;
+                                    }
+                                    MWF4pm = resultData;
+                                    break;
+                                case "5:00pm M W F":
+                                    if(MWF5pm){
+                                        MWF5pm = MWF5pm + " " + resultData;
+                                    }
+                                    MWF5pm = resultData;
+                                    break;
+                                case "8:00am T TH":
+                                    if(TTH8am){
+                                        TTH8am = TTH8am + " " + resultData;
+                                    }
+                                    else{
+                                        TTH8am = resultData;
+                                    }
+                                    break;
+                                case "9:00am T TH":
+                                    if(TTH9am){
+                                        TTH9am = TTH9am + " " + resultData;
+                                    }
+                                    else{
+                                        TTH9am = resultData;
+                                    }
+                                    break;
+                                case "10:00am T TH":
+                                    if(TTH10am){
+                                        TTH10am = TTH10am + " " + resultData;
+                                    }
+                                    else{
+                                        TTH10am = resultData;
+                                    }
+                                    break;
+                                case "11:00am T TH":
+                                    if(TTH11am){
+                                        TTH11am = TTH11am + " " + resultData;
+                                    }
+                                    else{
+                                        TTH11am = resultData;
+                                    }
+                                    break;
+                                case "12:00pm T TH":
+                                    if(TTH12pm){
+                                        TTH12pm = TTH12pm + " " + resultData;
+                                    }
+                                    else{
+                                        TTH12pm = resultData;
+                                    }
+                                    break;
+                                case "1:00pm T TH":
+                                    if(TTH1pm){
+                                        TTH1pm = TTH1pm + " " + resultData;
+                                    }
+                                    else{
+                                        TTH1pm = resultData;
+                                    }
+                                    break;
+                                case "2:00pm T TH":
+                                    if(TTH2pm){
+                                        TTH2pm = TTH2pm + " " + resultData;
+                                    }
+                                    else{
+                                        TTH2pm = resultData;
+                                    }
+                                    break;
+                                case "3:00pm T TH":
+                                    if(TTH3pm){
+                                        TTH3pm = TTH3pm + " " + resultData;
+                                    }
+                                    else{
+                                        TTH3pm = resultData;
+                                    }
+                                    break;
+                                case "4:00pm T TH":
+                                    if(TTH4pm){
+                                        TTH4pm = TTH4pm + " " + resultData;
+                                    }
+                                    else{
+                                        TTH4pm = resultData;
+                                    }
+                                    break;
+                                case "5:00pm T TH":
+                                    if(TTH5pm){
+                                        TTH5pm = TTH5pm + " " + resultData;
+                                    }
+                                    else{
+                                        TTH5pm = resultData;
+                                    }
+                                    break;
+
+                            }
+                        }.bind(this));
+
+                        table = 
+                            <table>
+                                <tbody>
+                                    <tr>
+                                        <th></th>
+                                        <th>Monday</th>
+                                        <th>Tuesday</th>
+                                        <th>Wednesay</th>
+                                        <th>Thursday</th>
+                                        <th>Friday</th>
+                                    </tr>
+                                    <tr>
+                                        <th>8am</th>
+                                        <td>
+                                            {MWF8am}
+                                        </td>
+                                        <td>
+                                            {TTH8am}
+                                        </td>
+                                        <td>
+                                            {MWF8am}
+                                        </td>
+                                        <td>
+                                            {TTH8am}
+                                        </td>
+                                        <td>
+                                            {MWF8am}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>9am</th>
+                                        <td>
+                                            {MWF9am}
+                                        </td>
+                                        <td>
+                                            {TTH9am}
+                                        </td>
+                                        <td>
+                                            {MWF9am}
+                                        </td>
+                                        <td>
+                                            {TTH9am}
+                                        </td>
+                                        <td>
+                                            {MWF9am}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>10am</th>
+                                        <td>
+                                            {MWF10am}
+                                        </td>
+                                        <td>
+                                            {TTH10am}
+                                        </td>
+                                        <td>
+                                            {MWF10am}
+                                        </td>
+                                        <td>
+                                            {TTH10am}
+                                        </td>
+                                        <td>
+                                            {MWF10am}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>11am</th>
+                                        <td>
+                                            {MWF11am}
+                                        </td>
+                                        <td>
+                                            {TTH11am}
+                                        </td>
+                                        <td>
+                                            {MWF11am}
+                                        </td>
+                                        <td>
+                                            {TTH11am}
+                                        </td>
+                                        <td>
+                                            {MWF11am}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>12pm</th>
+                                        <td>
+                                            {MWF12pm}
+                                        </td>
+                                        <td>
+                                            {TTH12pm}
+                                        </td>
+                                        <td>
+                                            {MWF12pm}
+                                        </td>
+                                        <td>
+                                            {TTH12pm}
+                                        </td>
+                                        <td>
+                                            {MWF12pm}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>1pm</th>
+                                        <td>
+                                            {MWF1pm}
+                                        </td>
+                                        <td>
+                                            {TTH1pm}
+                                        </td>
+                                        <td>
+                                            {MWF1pm}
+                                        </td>
+                                        <td>
+                                            {TTH1pm}
+                                        </td>
+                                        <td>
+                                            {MWF1pm}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>2pm</th>
+                                        <td>
+                                            {MWF2pm}
+                                        </td>
+                                        <td>
+                                            {TTH2pm}
+                                        </td>
+                                        <td>
+                                            {MWF2pm}
+                                        </td>
+                                        <td>
+                                            {TTH2pm}
+                                        </td>
+                                        <td>
+                                            {MWF2pm}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>3pm</th>
+                                        <td>
+                                            {MWF3pm}
+                                        </td>
+                                        <td>
+                                            {TTH3pm}
+                                        </td>
+                                        <td>
+                                            {MWF3pm}
+                                        </td>
+                                        <td>
+                                            {TTH3pm}
+                                        </td>
+                                        <td>
+                                            {MWF3pm}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>4pm</th>
+                                        <td>
+                                            {MWF4pm}
+                                        </td>
+                                        <td>
+                                            {TTH4pm}
+                                        </td>
+                                        <td>
+                                            {MWF4pm}
+                                        </td>
+                                        <td>
+                                            {TTH4pm}
+                                        </td>
+                                        <td>
+                                            {MWF4pm}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>5pm</th>
+                                        <td>
+                                            {MWF5pm}
+                                        </td>
+                                        <td>
+                                            {TTH5pm}
+                                        </td>
+                                        <td>
+                                            {MWF5pm}
+                                        </td>
+                                        <td>
+                                            {TTH5pm}
+                                        </td>
+                                        <td>
+                                            {MWF5pm}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                    }
+                    return(
+                        <div>
+                            <InputForm 
+                                teachers={this.state.teachers} 
+                                rooms={this.state.rooms}
+                                times={this.state.times}
+                                classes={this.state.classes}
+                                onCreateTeacherConstraint={this.onCreateTeacherConstraint}
+                                onCreateRoomConstraint={this.onCreateRoomConstraint}
+                                onCreateClassConstraint={this.onCreateClassConstraint}
+                            />
+                            <ConstraintList 
+                                teachers={this.state.teachers} 
+                                rooms={this.state.rooms}
+                                times={this.state.times}
+                                classes={this.state.classes}
+                                teacherConstraints={this.state.teacherConstraints}
+                                roomConstraints={this.state.roomConstraints}
+                                classConstraints={this.state.classConstraints}
+                                onDeleteClassConstraint={this.onDeleteClassConstraint}
+                                onGenerateSuccess={this.onGenerateSuccess}
+                            />
+                            <ul>
+                                {scheduleDisplay}
+                                {table}
+                            </ul>
+                        </div>
+                    ); -->
+                    */
+                    console.log(this.state);
+                    return <div>HELLO!</div>;
+                }
+            });
+            ReactDOM.render(
+                <MasterComponent />,
+                document.getElementById('content')
+            );
+        </script>
+    </body>
+
+</html> 

@@ -1,0 +1,995 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>
+            Class Scheduler
+        </title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.7/react.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.7/react-dom.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.5/marked.min.js"></script> 
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.22/require.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+        <style>
+            table{
+                margin: 5%;
+            }
+            td{
+                height: 60px;
+                width: 200px;
+                text-align: center;
+                border: 1px solid;
+            }
+            .table-cell:hover{
+                cursor: pointer;
+            }
+            button{
+                position: relative;
+                left: 46%;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="content"></div>
+        <script type="text/babel">
+
+            var TeacherMenu = React.createClass({
+                getInitialState: function(){
+                    return {
+                        selectedTeacher: "",
+                        restrictionType: "",
+                        restrictionValue: ""
+                    }
+                },
+
+                handleTeacherSelect: function(e){
+                    this.setState({selectedTeacher: e.target.value});
+                },
+
+                handleRestrictionChange: function(e){
+                    this.setState({restrictionType: e.target.value});
+                },
+
+                handleConstraintChange: function(e){
+                    this.setState({restrictionValue: e.target.value});
+                },
+
+                onCreateConstraint: function(){
+                    if(this.state.restrictionType && this.state.restrictionValue && this.state.selectedTeacher){
+                        this.props.onCreateConstraint(this.state);
+                    }
+                },
+
+                render: function(){
+                    var options;
+                    var teacherOptions = this.props.teachers.map(function(teacher){
+                        return <option key={teacher.name} value={teacher.name}>{teacher.name}</option>;
+                    });
+
+                    if(this.state.restrictionType.indexOf("time") > -1){
+                        options =  this.props.times.map(function(time){
+                            return <option value={time.time} key={time.time}>{time.time}</option>;
+                        });
+                    }
+                    else if(this.state.restrictionType.indexOf("class") > -1){
+                        options =  this.props.classes.map(function(_class){
+                            return <option value={_class.class} key={_class.class}>{_class.class}</option>;
+                        });
+                    }
+                    else{
+                        options = this.props.rooms.map(function(room){
+                            return <option value={room.room} key={room.room}>{room.room}</option>;
+                        });
+                    }
+                
+                    teacherOptions.unshift(<option key="" disabled="disabled" value="">Select a teacher</option>);
+                    options.unshift(<option key="" disabled="disabled" value="">Select...</option>);
+                    return (
+                      <div>
+                        <select onChange={this.handleTeacherSelect} value={this.state.selectedTeacher}>
+                          {teacherOptions}
+                        </select> 
+                        <select onChange={this.handleRestrictionChange} value={this.state.restrictionType}>
+                            <option value="" disabled="disabled">Select...</option>
+                            <option value="must teach at time">must teach at time</option>
+                            <option value="must not teach at time">must not teach at time</option>
+                            <option value="must teach in room">must teach in room</option>
+                            <option value="must not teach in room">must not teach in room</option>
+                            <option value="must teach class">must teach class</option>
+                            <option value="must not teach class">must not teach class</option>
+                        </select>
+                        <select onChange={this.handleConstraintChange} value={this.state.restrictionValue}>
+                            {options}
+                        </select>
+                        <div onClick={this.onCreateConstraint}>Create constraint</div>
+                      </div>
+                    
+                    );
+                }
+            });
+            
+            var ClassMenu = React.createClass({
+                getInitialState: function(){
+                    return {
+                        selectedClass: "",
+                        restrictionType: "",
+                        restrictionValue: ""
+                    }
+                },
+
+                handleClassSelect: function(e){
+                    this.setState({selectedClass: e.target.value});
+                },
+
+                handleRestrictionChange: function(e){
+                    this.setState({restrictionType: e.target.value});
+                },
+
+                handleConstraintChange: function(e){
+                    this.setState({restrictionValue: e.target.value});
+                },
+
+                onCreateConstraint: function(){
+                    if(this.state.restrictionType && this.state.restrictionValue && this.state.selectedClass){
+                        this.props.onCreateConstraint(this.state);
+                    }
+                },
+
+                render: function(){
+                    var options;
+
+                    var classOptions = this.props.classes.map(function(_class){
+                        return <option value={_class.class} key={_class.class}>{_class.class}</option>;
+                    });
+                    
+                    if(this.state.restrictionType.indexOf("time") > -1){
+                        options =  this.props.times.map(function(time){
+                            return <option value={time.time} key={time.time}>{time.time}</option>;
+                        });
+                    }
+                    else if(this.state.restrictionType.indexOf("room") > -1){
+                        options =  this.props.rooms.map(function(room){
+                            return <option value={room.room} key={room.room}>{room.room}</option>;
+                        });
+                    }
+                    else{
+                        options = this.props.teachers.map(function(teacher){
+                            return <option key={teacher.name} value={teacher.name}>{teacher.name}</option>;
+                        });
+                    }
+                                    
+                    classOptions.unshift(<option key="" disabled="disabled" value="">Select a class</option>);
+                    options.unshift(<option key="" disabled="disabled" value="">Select...</option>);
+                    
+                    return (
+                      <div>
+                        <select onChange={this.handleClassSelect} value={this.state.selectedClass}>
+                          {classOptions}
+                        </select> 
+                        <select onChange={this.handleRestrictionChange} value={this.state.restrictionType}>
+                            <option value="" disabled="disabled">Select...</option>
+                            <option value="must be taught at time">must be taught at time</option>
+                            <option value="must not be taught at time">must not be taught at time</option>
+                            <option value="must be taught in room">must be taught in room</option>
+                            <option value="must not be taught in room">must not be taught in room</option>
+                            <option value="must be taught by">must be taught by</option>
+                            <option value="must not be taught by">must not be taught by</option>
+                        </select>
+                        <select onChange={this.handleConstraintChange} value={this.state.restrictionValue}>
+                            {options}
+                        </select>
+                        <div onClick={this.onCreateConstraint}>Create constraint</div>
+                      </div>
+                    
+                    );
+                }
+
+            });
+            
+            var RoomMenu = React.createClass({
+                getInitialState: function(){
+                    return {
+                        selectedRoom: "",
+                        restrictionType: "",
+                        restrictionValue: ""
+                    }
+                },
+
+                handleRoomSelect: function(e){
+                    this.setState({selectedRoom: e.target.value});
+                },
+
+                handleRestrictionChange: function(e){
+                    this.setState({restrictionType: e.target.value});
+                },
+
+                handleConstraintChange: function(e){
+                    this.setState({restrictionValue: e.target.value});
+                },
+
+                onCreateConstraint: function(){
+                    this.props.onCreateConstraint(this.state);
+                },
+
+                render: function(){
+                    var options;
+                    var roomOptions = this.props.rooms.map(function(room){
+                        return <option key={room.room} value={room.room}>{room.room}</option>;
+                    });
+
+                    if(this.state.restrictionType.indexOf("time") > -1){
+                        options =  this.props.times.map(function(time){
+                            return <option value={time.time} key={time.time}>{time.time}</option>;
+                        });
+                    }
+                    else{
+                        options =  this.props.classes.map(function(_class){
+                            return <option value={_class.class} key={_class.class}>{_class.class}</option>;
+                        });
+                    }
+                
+                    roomOptions.unshift(<option key="" disabled="disabled" value="">Select a room</option>);
+                    options.unshift(<option key="" disabled="disabled" value="">Select...</option>);
+                    return (
+                      <div>
+                        <select onChange={this.handleRoomSelect} value={this.state.selectedRoom}>
+                          {roomOptions}
+                        </select> 
+                        <select onChange={this.handleRestrictionChange} value={this.state.restrictionType}>
+                            <option value="is available at time">is available at time</option>
+                            <option value="is not available at time">is not available at time</option>
+                            <option value="is required for class">is required for class</option>
+                            <option value="is not available for class">is not available for class</option>
+                        </select>
+                        <select onChange={this.handleConstraintChange} value={this.state.restrictionValue}>
+                            {options}
+                        </select>
+                        <div onClick={this.onCreateConstraint}>Create constraint</div>
+                      </div>
+                    
+                    );
+                }
+            });
+
+            var InputForm = React.createClass({
+                getInitialState: function(){
+                    return {
+                        teacherConstraints: {},
+                        timeConstraints: {},
+                        classConstraints: {},
+                        roomConstraints: {},
+                        selectedConstraint: ""
+                    }
+                },
+
+                onConstraintChange: function(e){
+                    this.setState({selectedConstraint: e.target.value});
+                },
+
+                renderTeacherMenu: function(){
+                    return(
+                        <TeacherMenu 
+                            onCreateConstraint={this.props.onCreateTeacherConstraint} 
+                            rooms={this.props.rooms} 
+                            times={this.props.times} 
+                            classes={this.props.classes} 
+                            teachers={this.props.teachers} 
+                        />
+                    );
+                },
+                
+                renderClassMenu: function(){
+                    return(
+                        <div>
+                            <ClassMenu 
+                                onCreateConstraint={this.props.onCreateClassConstraint} 
+                                rooms={this.props.rooms} 
+                                times={this.props.times} 
+                                classes={this.props.classes} 
+                                teachers={this.props.teachers} 
+                            />
+                        </div>
+                    );
+                },
+                
+                renderRoomMenu: function(){
+                    return(
+                        <div>
+                            <RoomMenu 
+                                onCreateConstraint={this.props.onCreateRoomConstraint} 
+                                rooms={this.props.rooms} 
+                                times={this.props.times} 
+                                classes={this.props.classes} 
+                                teachers={this.props.teachers} 
+                            />
+                        </div>
+                    );
+                },
+
+                render: function(){
+                    var detailedConstraintMenu;
+                    switch(this.state.selectedConstraint){
+                        case "teacher":
+                            detailedConstraintMenu = this.renderTeacherMenu();
+                            break;
+                        case "class":
+                            detailedConstraintMenu = this.renderClassMenu();
+                            break;
+                        case "room":
+                            detailedConstraintMenu = this.renderRoomMenu();
+                            break;
+                    }
+                            
+                    return (
+                      <div>
+                        <h2>Add a constraint</h2>
+                        <div>
+                          <select value={this.state.selectedConstraint} onChange={this.onConstraintChange} name="constraint-list" form="constraint-form">
+                            <option value="" disabled="disabled">Select a constraint</option>
+                              <option value="teacher">Teacher</option>
+                              <option value="class">Class</option>
+                              <option value="room">Room</option>
+                          </select>
+                        </div>
+                        {detailedConstraintMenu}
+                      </div>
+                    );
+                }
+            });
+
+            var ConstraintList = React.createClass({
+                onGenerate: function(){
+                    var allConstraints = this.props.teacherConstraints.concat(this.props.roomConstraints).concat(this.props.classConstraints);
+                    console.log(allConstraints);
+                    $.ajax({
+                        type: 'POST',
+                        url: 'http://localhost:5000/generate',
+                        data: {
+                            "teachers": JSON.stringify(this.props.teachers), 
+                            "classes": JSON.stringify(this.props.classes), 
+                            "rooms": JSON.stringify(this.props.rooms), 
+                            "times": JSON.stringify(this.props.times), 
+                            "teacher_constraints": JSON.stringify(this.props.teacherConstraints),
+                            "class_constraints": JSON.stringify(this.props.classConstraints), 
+                            "room_constraints": JSON.stringify(this.props.roomConstraints)
+                        },
+                        success: function(response){
+                            this.props.onGenerateSuccess(JSON.parse(response));
+                        }.bind(this),
+                    });
+                },
+
+                render: function(){
+                    var teacherConstraints = this.props.teacherConstraints.map(function(constraint){
+                        return <li key={constraint.selectedTeacher+constraint.restrictionType+constraint.restrictionValue}>{constraint.selectedTeacher} {constraint.restrictionType} {constraint.restrictionValue}</li>;
+                    });
+                    var roomConstraints = this.props.roomConstraints.map(function(constraint){
+                        return <li key={constraint.selectedRoom+constraint.restrictionType+constraint.restrictionValue}>{constraint.selectedRoom} {constraint.restrictionType} {constraint.restrictionValue}</li>;
+                    });
+                    var classConstraints = this.props.classConstraints.map(function(constraint){
+                        return <li onClick={this.props.onDeleteClassConstraint} key={constraint.selectedClass+constraint.restrictionType+constraint.restrictionValue}>{constraint.selectedClass} {constraint.restrictionType} {constraint.restrictionValue}</li>;
+                    }.bind(this));
+
+                    return(
+                        <div>
+                            <h3>
+                                Constraints
+                            </h3>
+                            <ul>
+                                {teacherConstraints}
+                            </ul>
+                            <ul>
+                                {roomConstraints}
+                            </ul>
+                            <ul>
+                                {classConstraints}
+                            </ul>
+                            <div onClick={this.onGenerate}>Click here to generate schedule with these constraints</div>
+                        </div>
+                    );
+                }
+            });
+
+            var DataCell = React.createClass({
+                getInitialState: function(){
+                    return ({
+                        status: this.props.status
+                    });
+                },
+
+                render: function(){
+                    var content = "-";
+                    switch(this.props.status){
+                        case "yes":
+                            content = <span className = "glyphicon glyphicon-ok" />;
+                            break;
+                        case "no":
+                            content = <span className = "glyphicon glyphicon-remove" />;
+                            break;
+                    }
+                    return (
+                        <td className="table-cell" onClick={this.props.onClick}>
+                            {content}
+                        </td>
+                    );
+                }
+            });
+
+            var TeachersTable = React.createClass({
+                getInitialState: function(){
+                    return({
+                        teachers: this.props.teachers,
+                        classes: this.props.classes,
+                        teacherStatuses: {},
+                        teacherCounts: {},
+                        classCounts: {}
+                    });
+                },
+
+                onTeacherClick: function(_class, teacher){
+                    var currentStatus = this.state.teacherStatuses[teacher.name + _class.class],
+                        valToAdd = 0,
+                        constraint;
+                    switch(currentStatus){
+                        case null:
+                            currentStatus = "yes";
+                            valToAdd = 1;
+                            constraint = {teacher: teacher.name, _class: _class.class}
+                            break;
+                        case "yes":
+                            currentStatus = "no";
+                            valToAdd = -1;
+                            var constraint = {teacher: teacher.name, _class: "not " + _class.class}
+                            break;
+                        default:
+                            currentStatus = null;
+                    }
+
+                    var temp = this.state.teacherStatuses;
+                    var newTeacherCount = this.state.teacherCounts;
+                    var newClassCount = this.state.classCounts;
+                    newTeacherCount[teacher.name] += valToAdd;
+                    newClassCount[_class.class] += valToAdd;
+                    temp[teacher.name + _class.class] = currentStatus;
+                    this.setState({
+                        teacherStatuses: temp,
+                        teacherCounts: newTeacherCount,
+                        classCounts: newClassCount
+                    });
+
+                    this.props.onRemove(teacher.name, _class.class);
+
+                    if(constraint){
+                        this.props.onCreate(constraint);
+                    }
+                },
+
+                componentDidMount: function(){
+                    var temp = {},
+                        tempClassCounts = {},
+                        tempTeacherCounts = {};
+
+                    this.props.teachers.map(function(teacher){
+                        if(!(teacher.name in tempTeacherCounts)){
+                            tempTeacherCounts[teacher.name] = 0;
+                        }
+                        this.props.classes.map(function(_class){
+                            if(!(teacher.name + _class.class in temp)){
+                                temp[teacher.name + _class.class] = null;
+                            }
+                            if(!(_class.class in tempClassCounts)){
+                                tempClassCounts[_class.class] = 0;
+                            }
+                        }.bind(this));
+                    }.bind(this));
+
+                    this.setState({
+                        teacherStatuses: temp, 
+                        classCounts: tempClassCounts, 
+                        teacherCounts: tempTeacherCounts
+                    });
+                },
+
+                render: function(){
+
+                    var teacherHeaders = this.props.teachers.map(function(teacher){
+                        return (
+                            <th scope="col" key={teacher.name}>
+                                {teacher.name}
+                            </th>
+                        );
+                    });
+
+                    teacherHeaders.unshift(<th key="empty"></th>);
+                    teacherHeaders.push(<th key="total">Total</th>);
+
+                    var classRows = this.props.classes.map(function(_class){
+                        var tableCells = this.props.teachers.map(function(teacher){
+                            var roomClick = function(){
+                                this.onTeacherClick(_class, teacher);
+                            }.bind(this);
+                            return (
+                                <DataCell status={this.state.teacherStatuses[teacher.name + _class.class]} onClick={roomClick} key={_class.class + teacher.name} />
+                            );                        
+                        }.bind(this));
+                        return (
+                            <tr key={_class.class}>
+                                <th scope="row">{_class.class}</th>
+                                {tableCells}
+                                <td>
+                                    {this.state.classCounts[_class.class]}
+                                </td>
+                            </tr>
+                        );
+                    }.bind(this));
+
+                    var teacherCountCells = this.props.teachers.map(function(teacher){
+                        return <td key={teacher.name}>{this.state.teacherCounts[teacher.name]}</td>
+                    }.bind(this));
+
+                    teacherCountCells.unshift(<th scope="row" key="total">Total</th>);
+
+                    return(
+                        <table>
+                            <thead>
+                                <tr>{teacherHeaders}</tr>
+                            </thead>
+                            <tbody>
+                                {classRows}
+                                <tr>
+                                    {teacherCountCells}
+                                </tr>
+                            </tbody>
+                        </table>
+                    );
+                }
+            });
+
+            var RoomsTable = React.createClass({
+                getInitialState: function(){
+                    return({
+                        rooms: this.props.rooms,
+                        classes: this.props.classes,
+                        roomStatuses: {}
+                    });
+                },
+
+                onRoomClick: function(_class, room){
+                    var currentStatus = this.state.roomStatuses[room.room + _class.class],
+                        constraint;
+                    switch(currentStatus){
+                        case null:
+                            currentStatus = "yes";
+                            constraint = {room: room.room, _class: _class.class}
+                            break;
+                        case "yes":
+                            currentStatus = "no";
+                            constraint = {room: room.room, _class: "not " + _class.class}
+                            break;
+                        default:
+                            currentStatus = null;
+                    }
+
+                    var temp = this.state.roomStatuses;
+                    temp[room.room + _class.class] = currentStatus;
+                    this.setState({roomStatuses: temp});
+
+                    this.props.onRemove(room.room, _class.class);
+
+                    if(constraint){
+                        this.props.onCreate(constraint);
+                    }
+                },
+
+                componentDidMount: function(){
+                    var temp = {};
+
+                    this.props.rooms.map(function(room){
+                        this.props.classes.map(function(_class){
+                            if(!(room.room + _class.class in temp)){
+                                temp[room.room + _class.class] = null;
+                            }
+                        }.bind(this));
+                    }.bind(this));
+
+                    this.setState({roomStatuses: temp});
+                },
+
+                render: function(){
+                    var roomHeaders = this.props.rooms.map(function(room){
+                        return (
+                            <th scope="col" key={room.room}>
+                                {room.room}
+                            </th>
+                        );
+                    });
+
+                    roomHeaders.unshift(<th key="empty"></th>);
+
+                    var classHeaders = this.props.classes.map(function(_class){
+                        var tableCells = this.props.rooms.map(function(room){
+                            var roomClick = function(){
+                                this.onRoomClick(_class, room);
+                            }.bind(this);
+                            return (
+                                <DataCell status={this.state.roomStatuses[room.room + _class.class]} onClick={roomClick} key={_class.class + room.room} class={_class} room={room} />
+                            );                        
+                        }.bind(this));
+                        return (
+                            <tr key={_class.class}>
+                                <th scope="row">{_class.class}</th>
+                                {tableCells}
+                            </tr>
+                        );
+                    }.bind(this));
+
+                    return(
+                        <table>
+                            <thead>
+                                <tr>{roomHeaders}</tr>
+                            </thead>
+                            <tbody>
+                                {classHeaders}
+                            </tbody>
+                        </table>
+                    );
+                }
+            });
+
+            var TimesTable = React.createClass({
+                getInitialState: function(){
+                    return({
+                        times: this.props.times,
+                        classes: this.props.classes,
+                        timeStatuses: {}
+                    });
+                },
+
+
+                onTimeClick: function(_class, time){
+                    var currentStatus = this.state.timeStatuses[time.time + _class.class],
+                        constraint;
+                    switch(currentStatus){
+                        case null:
+                            currentStatus = "yes";
+                            constraint = {time: time.time, _class: _class.class}
+                            break;
+                        case "yes":
+                            currentStatus = "no";
+                            constraint = {time: time.time, _class: "not " + _class.class}
+                            break;
+                        default:
+                            currentStatus = null;
+                    }
+
+                    var temp = this.state.timeStatuses;
+                    temp[time.time + _class.class] = currentStatus;
+                    this.setState({roomStatuses: temp});
+
+                    this.props.onRemove(time.time, _class.class);
+
+                    if(constraint){
+                        this.props.onCreate(constraint);
+                    }
+                },
+
+                componentDidMount: function(){
+                    var temp = {};
+
+                    this.props.times.map(function(time){
+                        this.props.classes.map(function(_class){
+                            if(!(time.time + _class.class in temp)){
+                                temp[time.time + _class.class] = null;
+                            }
+                        }.bind(this));
+                    }.bind(this));
+
+                    this.setState({timeStatuses: temp});
+                },
+
+                render: function(){
+                    var timeHeaders = this.props.times.map(function(time){
+                        return (
+                            <th scope="col" key={time.time}>
+                                {time.time}
+                            </th>
+                        );
+                    });
+
+                    timeHeaders.unshift(<th key="empty"></th>);
+
+                    var classHeaders = this.props.classes.map(function(_class){
+                        var tableCells = this.props.times.map(function(time){
+                            var timeClick = function(){
+                                this.onTimeClick(_class, time);
+                            }.bind(this);
+                            return (
+                                <DataCell status={this.state.timeStatuses[time.time + _class.class]} onClick={timeClick} key={_class.class + time.time} />
+                            );                        
+                        }.bind(this));
+                        return (
+                            <tr key={_class.class}>
+                                <th scope="row">{_class.class}</th>
+                                {tableCells}
+                            </tr>
+                        );
+                    }.bind(this));
+
+                    return(
+                        <table>
+                            <thead>
+                                <tr>{timeHeaders}</tr>
+                            </thead>
+                            <tbody>
+                                {classHeaders}
+                            </tbody>
+                        </table>
+                    );
+                }
+            });
+
+            var TeacherCountTable = React.createClass({
+                getInitialState: function(){
+                    var counts = {};
+                    this.props.teachers.map(function(teacher){
+                        counts[teacher.name] = 0;
+                    });
+                    return{
+                        teacherCounts: counts
+                    }
+                },
+
+                handleChange: function(teacher, val){
+                    var currentCounts = this.state.teacherCounts;
+                    currentCounts[teacher] = val;
+                    this.setState({
+                        teacherCounts: currentCounts
+                    });
+                },
+
+                render: function(){
+                    var rows = this.props.teachers.map(function(teacher){
+                        var handleChange = function(e){
+                            this.handleChange(teacher.name, e.target.value)
+                        }.bind(this);
+                        return (
+                            <tr key={teacher.name}>
+                                <td>{teacher.name}</td>
+                                <td>
+                                    <input type="text" onChange={handleChange} value={this.state.teacherCounts[teacher.name]} />
+                                </td>
+                            </tr>
+                        );
+                    }.bind(this));
+                    return (
+                        <table>
+                            <tbody>
+                                {rows}
+                            </tbody>
+                        </table>
+                    );
+                }
+            });
+
+            var ScheduleTable = React.createClass({
+                render: function(){                    
+                    var teacherHeaders = this.props.teachers.map(function(teacher){
+                        return (
+                            <th scope="col" key={teacher.name}>
+                                {teacher.name}
+                            </th>
+                        );
+                    });
+
+                    teacherHeaders.unshift(<th key="empty"></th>);
+
+                    var classRows = this.props.classes.map(function(_class){
+                        var tableCells = this.props.teachers.map(function(teacher){
+                            var content = "-";
+                            var className = _class.class
+                            if(this.props.schedule[className].teacher == teacher.name){
+                                content = <span className = "glyphicon glyphicon-ok" />;
+                            }
+                            return (
+                                <td key={teacher.name}>{content}</td>
+                            );                        
+                        }.bind(this));
+                        return (
+                            <tr key={_class.class}>
+                                <th scope="row">{_class.class}</th>
+                                {tableCells}
+                            </tr>
+                        );
+                    }.bind(this));
+
+                    return(
+                        <table>
+                            <thead>
+                                <tr>{teacherHeaders}</tr>
+                            </thead>
+                            <tbody>
+                                {classRows}
+                            </tbody>
+                        </table>
+                    );
+                }
+            });
+
+            var MasterComponent = React.createClass({
+                getInitialState: function(){
+                    return({
+                        teacherConstraints: {},
+                        roomConstraints: {},
+                        timeConstraints: {},
+                    });
+                },
+
+                componentDidMount: function(){
+                    $.ajax({
+                        type: 'GET',
+                        url: 'http://localhost:5000/data',
+                        success: function(response){
+                            var parsed = JSON.parse(response);
+                            this.setState({
+                                teachers: parsed.teachers,
+                                classes: parsed.classes,
+                                times: parsed.times,
+                                rooms: parsed.rooms
+                            })
+                        }.bind(this),
+                    });
+
+                },
+
+                onCreateTeacherConstraint: function(constraint){
+                    var currentTeacherConstraints = this.state.teacherConstraints;
+                    if(!(constraint.teacher in currentTeacherConstraints)){
+                        currentTeacherConstraints[constraint.teacher] = [];
+                    }
+                    currentTeacherConstraints[constraint.teacher].push(constraint._class);
+                    this.setState({
+                        teacherConstraints: currentTeacherConstraints
+                    });
+                },
+
+                onRemoveTeacherConstraint: function(teacher, _class){
+                    var temp = this.state.teacherConstraints;
+                    var currentConstraints = this.state.teacherConstraints[teacher];
+                    
+                    if(!currentConstraints){
+                        return;
+                    }
+
+                    var index = currentConstraints.indexOf(_class);
+                    if(index > -1){
+                        currentConstraints.splice(index, 1);
+                    }
+
+                    index = currentConstraints.indexOf("not " + _class);
+                    if(index > -1){
+                        currentConstraints.splice(index, 1);
+                    }
+                    temp[teacher] = currentConstraints;
+                    this.setState({teacherConstraints: temp});
+                },
+                
+                onCreateRoomConstraint: function(constraint){
+                    var currentRoomConstraints = this.state.roomConstraints;
+                    if(!(constraint.room in currentRoomConstraints)){
+                        currentRoomConstraints[constraint.room] = [];
+                    }
+                    currentRoomConstraints[constraint.room].push(constraint._class);
+                    this.setState({
+                        roomConstraints: currentRoomConstraints
+                    });
+                },
+
+                onRemoveRoomConstraint: function(room, _class){
+                    var temp = this.state.roomConstraints;
+                    var currentConstraints = this.state.roomConstraints[room];
+                    
+                    if(!currentConstraints){
+                        return;
+                    }
+
+                    var index = currentConstraints.indexOf(_class);
+                    if(index > -1){
+                        currentConstraints.splice(index, 1);
+                    }
+
+                    index = currentConstraints.indexOf("not " + _class);
+                    if(index > -1){
+                        currentConstraints.splice(index, 1);
+                    }
+                    temp[room] = currentConstraints;
+                    this.setState({roomConstraints: temp});
+                },
+                
+                onCreateTimeConstraint: function(constraint){
+                    var currentTimeConstraints = this.state.timeConstraints;
+                    if(!(constraint.time in currentTimeConstraints)){
+                        currentTimeConstraints[constraint.time] = [];
+                    }
+                    currentTimeConstraints[constraint.time].push(constraint._class);
+                    this.setState({
+                        timeConstraints: currentTimeConstraints
+                    });
+                },
+
+                onRemoveTimeConstraint: function(time, _class){
+                    var temp = this.state.timeConstraints;
+                    var currentConstraints = this.state.timeConstraints[time];
+                    
+                    if(!currentConstraints){
+                        return;
+                    }
+
+                    var index = currentConstraints.indexOf(_class);
+                    if(index > -1){
+                        currentConstraints.splice(index, 1);
+                    }
+
+                    index = currentConstraints.indexOf("not " + _class);
+                    if(index > -1){
+                        currentConstraints.splice(index, 1);
+                    }
+                    temp[time] = currentConstraints;
+                    this.setState({timeConstraints: temp});
+                },
+
+                onGenerateSuccess: function(schedule){
+                    this.setState({
+                        completedSchedule: schedule
+                    })
+                },
+
+                onGenerate: function(){
+                    $.ajax({
+                        type: 'POST',
+                        url: 'http://localhost:5000/generate',
+                        data: {
+                            "teachers": JSON.stringify(this.state.teachers), 
+                            "classes": JSON.stringify(this.state.classes), 
+                            "rooms": JSON.stringify(this.state.rooms), 
+                            "times": JSON.stringify(this.state.times)
+                        },
+                        success: function(response){
+                            this.onGenerateSuccess(JSON.parse(response));
+                        }.bind(this),
+                    });
+
+                },
+                
+                render: function(){
+                    if(!this.state.teachers || !this.state.rooms || !this.state.classes || !this.state.times){
+                        return <div>Loading</div>
+                    }
+                    var schedule;
+                    if(this.state.completedSchedule){
+                        schedule = <ScheduleTable schedule={this.state.completedSchedule} teachers={this.state.teachers} classes={this.state.classes} />
+                    }
+                    return (
+                        <div>
+                            <div>
+                                <TeachersTable onCreate={this.onCreateTeacherConstraint} onRemove={this.onRemoveTeacherConstraint} classes={this.state.classes} teachers={this.state.teachers} />
+                                <RoomsTable onCreate={this.onCreateRoomConstraint} onRemove={this.onRemoveRoomConstraint} classes={this.state.classes} rooms={this.state.rooms} />
+                                <TimesTable onCreate={this.onCreateTimeConstraint} onRemove={this.onRemoveTimeConstraint} classes={this.state.classes} times={this.state.times} />
+                                <TeacherCountTable teachers={this.state.teachers} />
+                            </div>
+                            <div>
+                                <button onClick={this.onGenerate} type="button" className="btn btn-primary">Generate Schedule</button>
+                            </div>
+                            {schedule}
+                        </div>
+                    );
+                }
+            });
+            ReactDOM.render(
+                <MasterComponent />,
+                document.getElementById('content')
+            );
+        </script>
+    </body>
+
+</html> 
