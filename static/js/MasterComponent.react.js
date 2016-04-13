@@ -1,6 +1,7 @@
 import RoomsTable from './RoomsTable.react.js';
 import ScheduleTable from './ScheduleTable.react.js';
 import TeacherCountTable from './TeacherCountTable.react.js';
+import TeacherTimeTable from './TeacherTimeTable.react.js';
 import TeachersTable from './TeachersTable.react.js';
 import TimesTable from './TimesTable.react.js';
 
@@ -10,6 +11,8 @@ var MasterComponent = React.createClass({
             teacherConstraints: {},
             roomConstraints: {},
             timeConstraints: {},
+            teacherTimeConstraints: {},
+            roomTimeConstraints: {}
         });
     },
 
@@ -93,6 +96,38 @@ var MasterComponent = React.createClass({
         temp[room] = currentConstraints;
         this.setState({roomConstraints: temp});
     },
+
+    onCreateTeacherTimeConstraint: function(constraint){
+        var currentTeacherTimeConstraints = this.state.teacherTimeConstraints;
+        if(!(constraint.time in currentTeacherTimeConstraints)){
+            currentTeacherTimeConstraints[constraint.time] = [];
+        }
+        currentTeacherTimeConstraints[constraint.time].push(constraint.teacher);
+        this.setState({
+            teacherTimeConstraints: currentTeacherTimeConstraints
+        });
+    },
+
+    onRemoveTeacherTimeConstraint: function(time, teacher){
+        var temp = this.state.teacherTimeConstraints;
+        var currentConstraints = this.state.teacherTimeConstraints[time];
+        
+        if(!currentConstraints){
+            return;
+        }
+
+        var index = currentConstraints.indexOf(teacher);
+        if(index > -1){
+            currentConstraints.splice(index, 1);
+        }
+
+        index = currentConstraints.indexOf("not " + _class);
+        if(index > -1){
+            currentConstraints.splice(index, 1);
+        }
+        temp[time] = currentConstraints;
+        this.setState({timeConstraints: temp});
+    },
     
     onCreateTimeConstraint: function(constraint){
         var currentTimeConstraints = this.state.timeConstraints;
@@ -163,6 +198,7 @@ var MasterComponent = React.createClass({
                     <TeachersTable onCreate={this.onCreateTeacherConstraint} onRemove={this.onRemoveTeacherConstraint} classes={this.state.classes} teachers={this.state.teachers} />
                     <RoomsTable onCreate={this.onCreateRoomConstraint} onRemove={this.onRemoveRoomConstraint} classes={this.state.classes} rooms={this.state.rooms} />
                     <TimesTable onCreate={this.onCreateTimeConstraint} onRemove={this.onRemoveTimeConstraint} classes={this.state.classes} times={this.state.times} />
+                    <TeacherTimeTable onCreate={this.onCreateTeacherTimeConstraint} onRemove={this.onRemoveTeacherTimeConstraint} teachers={this.state.teachers} times={this.state.times} />
                     <TeacherCountTable teachers={this.state.teachers} />
                 </div>
                 <div>
