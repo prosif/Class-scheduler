@@ -1,27 +1,37 @@
 from flask import Flask, request, url_for, send_from_directory
 from flask.ext.cors import CORS
-import random, json
+import random
+import json
 from pprint import pprint
 
 app = Flask(__name__)
 CORS(app)
 
 
-@app.route("/", methods=['GET'])
+@app.route('/', methods=['GET'])
 def root():
     return app.send_static_file('index.html')
 
 
-@app.route("/data", methods=['GET'])
+@app.route('/data', methods=['GET'])
 def data():
     with open("data.json") as f:
         data = json.load(f)
     return json.dumps(data)
 
 
+@app.route('/css/<filename>', methods=['GET'])
+def css(filename):
+    return app.send_static_file('css/' + filename)
+
+
+@app.route('/js/<filename>', methods=['GET'])
+def js(filename):
+    return app.send_static_file('js/' + filename)
+
+
 @app.route("/generate", methods=['POST'])
 def hello():
-    print "wat"
     teachers = json.loads(request.form['teachers'])
     classes = json.loads(request.form['classes'])
     rooms = json.loads(request.form['rooms'])
