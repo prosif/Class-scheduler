@@ -2,6 +2,7 @@ import RoomsTable from './RoomsTable.react.js';
 import ScheduleTable from './ScheduleTable.react.js';
 import TeacherCountTable from './TeacherCountTable.react.js';
 import TeacherTimeTable from './TeacherTimeTable.react.js';
+import RoomTimeTable from './RoomTimeTable.react.js';
 import TeachersTable from './TeachersTable.react.js';
 import TimesTable from './TimesTable.react.js';
 
@@ -95,6 +96,38 @@ var MasterComponent = React.createClass({
         }
         temp[room] = currentConstraints;
         this.setState({roomConstraints: temp});
+    },
+
+    onCreateRoomTimeConstraint: function(constraint){
+        var currentRoomTimeConstraints = this.state.roomTimeConstraints;
+        if(!(constraint.room in currentRoomTimeConstraints)){
+            currentRoomTimeConstraints[constraint.room] = [];
+        }
+        currentRoomTimeConstraints[constraint.room].push(constraint.time);
+        this.setState({
+            roomTimeConstraints: currentRoomTimeConstraints
+        });
+    },
+
+    onRemoveRoomTimeConstraint: function(time, room){
+        var temp = this.state.roomTimeConstraints;
+        var currentConstraints = this.state.roomTimeConstraints[room];
+        
+        if(!currentConstraints){
+            return;
+        }
+
+        var index = currentConstraints.indexOf(time);
+        if(index > -1){
+            currentConstraints.splice(index, 1);
+        }
+
+        index = currentConstraints.indexOf("not " + time);
+        if(index > -1){
+            currentConstraints.splice(index, 1);
+        }
+        temp[room] = currentConstraints;
+        this.setState({roomTimeConstraints: temp});
     },
 
     onCreateTeacherTimeConstraint: function(constraint){
@@ -199,6 +232,7 @@ var MasterComponent = React.createClass({
                     <RoomsTable onCreate={this.onCreateRoomConstraint} onRemove={this.onRemoveRoomConstraint} classes={this.state.classes} rooms={this.state.rooms} />
                     <TimesTable onCreate={this.onCreateTimeConstraint} onRemove={this.onRemoveTimeConstraint} classes={this.state.classes} times={this.state.times} />
                     <TeacherTimeTable onCreate={this.onCreateTeacherTimeConstraint} onRemove={this.onRemoveTeacherTimeConstraint} teachers={this.state.teachers} times={this.state.times} />
+                    <RoomTimeTable onCreate={this.onCreateRoomTimeConstraint} onRemove={this.onRemoveRoomTimeConstraint} rooms={this.state.rooms} times={this.state.times} />
                     <TeacherCountTable teachers={this.state.teachers} />
                 </div>
                 <div>
