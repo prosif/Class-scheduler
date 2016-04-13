@@ -1,0 +1,30 @@
+{
+  "name": "CS436",
+  "version": "1.0.0",
+  "description": "schedule classes",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prosif/Class-scheduler.git"
+  },
+  "author": "Joseph Garcia",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/prosif/Class-scheduler/issues"
+  },
+  "homepage": "https://github.com/prosif/Class-scheduler",
+  "dependencies": {
+    "react": "^0.14.7",
+    "react-dom": "^0.14.7"
+  },
+  "devDependencies": {
+    "babel-core": "^6.4.5",
+    "babel-loader": "^6.2.1",
+    "babel-preset-es2015": "^6.3.13",
+    "babel-preset-react": "^6.5.0",
+    "webpack": "^1.12.12"
+  }
+}
