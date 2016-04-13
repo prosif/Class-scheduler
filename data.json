@@ -1,13 +1,13 @@
 {
     "teachers": [
-        {"name": "Mercer"},
-        {"name": "Homer"},
-        {"name": "Sethi"},
-        {"name": "McCann"},
-        {"name": "Hartman"},
-        {"name": "Debray"},
-        {"name": "Kececioglu"},
-        {"name": "Zhang"}
+        {"name": "Teacher One"},
+        {"name": "Teacher Two"},
+        {"name": "Teacher Three"},
+        {"name": "Teacher Four"},
+        {"name": "Teacher Five"},
+        {"name": "Teacher Six"},
+        {"name": "Teacher Seven"},
+        {"name": "Teacher Eight"}
     ],
     "classes": [
         {"class": "CSC127a"},
