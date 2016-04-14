@@ -1,20 +1,20 @@
 import EditBox from './EditBox.react.js';
 
 var DataForm = React.createClass({
-	onChangeTime: function(newText){
-		console.log("Going to save thing as", newText);
+	onChangeTime: function(oldText, newText){
+		this.props.onChangeTime(oldText, newText);
 	},
 
-	onChangeRoom: function(newText){
-		console.log("Going to save thing as", newText);
+	onChangeRoom: function(oldText, newText){
+		this.props.onChangeRoom(oldText, newText);
 	},
 
-	onChangeClass: function(newText){
-		console.log("Going to save thing as", newText);
+	onChangeClass: function(oldText, newText){
+		this.props.onChangeClass(oldText, newText);
 	},
 
-	onChangeTeacher: function(newText){
-		console.log("Going to save thing as", newText);
+	onChangeTeacher: function(oldText, newText){
+		this.props.onChangeTeacher(oldText, newText);
 	},
 
 	render: function(){
@@ -35,22 +35,23 @@ var DataForm = React.createClass({
 		}.bind(this));
 
 		return (
-			<div>
-				<div>
-					<ul>
-						{classesList}
-					</ul>
-					<ul>
-						{timesList}
-					</ul>
-					<ul>
-						{roomsList}
-					</ul>
-					<ul>
-						{teachersList}
-					</ul>
-				</div>
-				<div onClick={this.onSaveChanges}>Click here to save changes</div>
+			<div id="data-lists">
+				<ul>
+					<lh><strong>Classes</strong></lh>
+					{classesList}
+				</ul>
+				<ul>
+					<lh><strong>Times</strong></lh>
+					{timesList}
+				</ul>
+				<ul>
+					<lh><strong>Rooms</strong></lh>
+					{roomsList}
+				</ul>
+				<ul>
+					<lh><strong>Teachers</strong></lh>
+					{teachersList}
+				</ul>
 			</div>
 		);
 	}

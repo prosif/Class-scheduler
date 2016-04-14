@@ -35,6 +35,54 @@ var MasterComponent = React.createClass({
 
     },
 
+    onChangeClass: function(oldText, newText){
+        var tempClasses = this.state.classes;
+        for(var x in tempClasses){
+            if(tempClasses[x].class == oldText){
+                tempClasses[x].class = newText;
+            }
+        }
+        this.setState({
+            classes: tempClasses
+        });
+    },
+
+    onChangeTeacher: function(oldText, newText){
+        var tempTeachers = this.state.teachers;
+        for(var x in tempTeachers){
+            if(tempTeachers[x].name == oldText){
+                tempTeachers[x].name = newText;
+            }
+        }
+        this.setState({
+            teachers: tempTeachers
+        });
+    },
+
+    onChangeRoom: function(oldText, newText){
+        var tempRooms = this.state.rooms;
+        for(var x in tempRooms){
+            if(tempRooms[x].room == oldText){
+                tempRooms[x].room = newText;
+            }
+        }
+        this.setState({
+            rooms: tempRooms
+        });
+    },
+
+    onChangeTime: function(oldText, newText){
+        var tempTimes = this.state.times;
+        for(var x in tempTimes){
+            if(tempTimes[x].time == oldText){
+                tempTimes[x].time = newText;
+            }
+        }
+        this.setState({
+            times: tempTimes
+        });
+    },
+
     onCreateTeacherConstraint: function(constraint){
         var currentTeacherConstraints = this.state.teacherConstraints;
         if(!(constraint.teacher in currentTeacherConstraints)){
@@ -229,7 +277,16 @@ var MasterComponent = React.createClass({
         return (
             <div>
                 <div>
-                    <DataForm teachers={this.state.teachers} times={this.state.times} rooms={this.state.rooms} classes={this.state.classes} />
+                    <DataForm 
+                        teachers={this.state.teachers} 
+                        times={this.state.times} 
+                        rooms={this.state.rooms} 
+                        classes={this.state.classes} 
+                        onChangeClass={this.onChangeClass}
+                        onChangeTime={this.onChangeTime}
+                        onChangeRoom={this.onChangeRoom}
+                        onChangeTeacher={this.onChangeTeacher}
+                    />
                     <TeachersTable onCreate={this.onCreateTeacherConstraint} onRemove={this.onRemoveTeacherConstraint} classes={this.state.classes} teachers={this.state.teachers} />
                     <RoomsTable onCreate={this.onCreateRoomConstraint} onRemove={this.onRemoveRoomConstraint} classes={this.state.classes} rooms={this.state.rooms} />
                     <TimesTable onCreate={this.onCreateTimeConstraint} onRemove={this.onRemoveTimeConstraint} classes={this.state.classes} times={this.state.times} />

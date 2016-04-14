@@ -19,7 +19,7 @@ var EditBox = React.createClass({
 	},
 
 	onConfirm: function(){
-		this.props.onConfirm(this.state.content);
+		this.props.onConfirm(this.props.content, this.state.content);
 		this.setState({
 			editing: false
 		});
