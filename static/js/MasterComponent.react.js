@@ -59,6 +59,90 @@ var MasterComponent = React.createClass({
         });
     },
 
+    onCreateTeacher: function(teacherName){
+        var tempTeachers = this.state.teachers,
+            newTeacher = {name: teacherName};
+        tempTeachers.push(newTeacher);
+        
+        this.setState({
+            teachers: tempTeachers
+        });
+
+        $.ajax({
+            type: 'POST',
+            url: 'http://localhost:5000/teachers',
+            data: {
+                "teachers": JSON.stringify(this.state.teachers)
+            },
+            success: function(response){
+                console.log(response);
+            }.bind(this),
+        });
+    },
+
+    onCreateRoom: function(roomName){
+        var tempRooms = this.state.rooms,
+            newRoom = {room: roomName};
+        tempRooms.push(newRoom);
+        
+        this.setState({
+            rooms: tempRooms
+        });
+
+        $.ajax({
+            type: 'POST',
+            url: 'http://localhost:5000/rooms',
+            data: {
+                "rooms": JSON.stringify(this.state.rooms)
+            },
+            success: function(response){
+                console.log(response);
+            }.bind(this),
+        });
+    },
+
+    onCreateClass: function(className){
+        var tempClasses = this.state.classes,
+            newClass = {class: className};
+        tempClasses.push(newClass);
+        
+        this.setState({
+            classes: tempClasses
+        });
+
+        $.ajax({
+            type: 'POST',
+            url: 'http://localhost:5000/classes',
+            data: {
+                "classes": JSON.stringify(this.state.classes)
+            },
+            success: function(response){
+                console.log(response);
+            }.bind(this),
+        });
+    },
+
+    onCreateTime: function(timeName){
+        var tempTimes = this.state.times,
+            newTime = {time: timeName};
+        tempTimes.push(newTime);
+        
+        this.setState({
+            times: tempTimes
+        });
+
+        $.ajax({
+            type: 'POST',
+            url: 'http://localhost:5000/times',
+            data: {
+                "times": JSON.stringify(this.state.times)
+            },
+            success: function(response){
+                console.log(response);
+            }.bind(this),
+        });
+    },
+
     onChangeRoom: function(oldText, newText){
         var tempRooms = this.state.rooms;
         for(var x in tempRooms){
@@ -286,6 +370,10 @@ var MasterComponent = React.createClass({
                         onChangeTime={this.onChangeTime}
                         onChangeRoom={this.onChangeRoom}
                         onChangeTeacher={this.onChangeTeacher}
+                        onCreateTeacher={this.onCreateTeacher}
+                        onCreateRoom={this.onCreateRoom}
+                        onCreateTime={this.onCreateTime}
+                        onCreateClass={this.onCreateClass}
                     />
                     <TeachersTable onCreate={this.onCreateTeacherConstraint} onRemove={this.onRemoveTeacherConstraint} classes={this.state.classes} teachers={this.state.teachers} />
                     <RoomsTable onCreate={this.onCreateRoomConstraint} onRemove={this.onRemoveRoomConstraint} classes={this.state.classes} rooms={this.state.rooms} />
