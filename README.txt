@@ -7,7 +7,7 @@ Start the local app server by typing "python app.py" and then navigate to "local
 Backend Installation (works on 32 bit ubuntu):
   Basic Dependencies:
     apt-get install python-dev libxml2-dev libxslt-dev python-glpk
-    #Note python-glpk is not a dependency but seems to install some unlisted required dependency of PyGLPK
+    #Note python-glpk is not a dependency but seems to install some unlisted required dependency
     
   GLPK:
     Download GLPK v.4.47 from: http://ftp.gnu.org/gnu/glpk/
