@@ -16,21 +16,21 @@ var TimesTable = React.createClass({
         switch(currentStatus){
             case null:
                 currentStatus = "yes";
-                constraint = {time: time.time, _class: _class.class}
+                constraint = {time: time.start_time + time.end_time, _class: _class.class}
                 break;
             case "yes":
                 currentStatus = "no";
-                constraint = {time: time.time, _class: "not " + _class.class}
+                constraint = {time: time.start_time + time.end_time, _class: "not " + _class.class}
                 break;
             default:
                 currentStatus = null;
         }
 
         var temp = this.state.timeStatuses;
-        temp[time.time + _class.class] = currentStatus;
+        temp[time.start_time + time.end_time + _class.class] = currentStatus;
         this.setState({roomStatuses: temp});
 
-        this.props.onRemove(time.time, _class.class);
+        this.props.onRemove(time.start_time + time.end_time, _class.class);
 
         if(constraint){
             this.props.onCreate(constraint);
@@ -42,8 +42,8 @@ var TimesTable = React.createClass({
 
         this.props.times.map(function(time){
             this.props.classes.map(function(_class){
-                if(!(time.time + _class.class in temp)){
-                    temp[time.time + _class.class] = null;
+                if(!(time.start_time + time.end_time + _class.class in temp)){
+                    temp[time.start_time + time.end_time + _class.class] = null;
                 }
             }.bind(this));
         }.bind(this));
@@ -54,8 +54,8 @@ var TimesTable = React.createClass({
     render: function(){
         var timeHeaders = this.props.times.map(function(time){
             return (
-                <th scope="col" key={time.time}>
-                    {time.time}
+                <th scope="col" key={time.start_time + time.end_time}>
+                    {time.start_time}
                 </th>
             );
         });
@@ -68,7 +68,7 @@ var TimesTable = React.createClass({
                     this.onTimeClick(_class, time);
                 }.bind(this);
                 return (
-                    <DataCell status={this.state.timeStatuses[time.time + _class.class]} onClick={timeClick} key={_class.class + time.time} />
+                    <DataCell status={this.state.timeStatuses[time.start_time + time.end_time + _class.class]} onClick={timeClick} key={_class.class + time.start_time + time.end_time} />
                 );                        
             }.bind(this));
             return (

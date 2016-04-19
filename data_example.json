@@ -23,26 +23,10 @@
         {"class": "CSC452"}
     ],
     "times": [
-        {"time": "8:00am M W F"},
-        {"time": "9:00am M W F"},
-        {"time": "10:00am M W F"},
-        {"time": "11:00am M W F"},
-        {"time": "12:00pm M W F"},
-        {"time": "1:00pm M W F"},
-        {"time": "2:00pm M W F"},
-        {"time": "3:00pm M W F"},
-        {"time": "4:00pm M W F"},
-        {"time": "5:00pm M W F"},
-        {"time": "8:00am T TH"},
-        {"time": "9:00am T TH"},
-        {"time": "10:00am T TH"},
-        {"time": "11:00am T TH"},
-        {"time": "12:00pm T TH"},
-        {"time": "1:00pm T TH"},
-        {"time": "2:00pm T TH"},
-        {"time": "3:00pm T TH"},
-        {"time": "4:00pm T TH"},
-        {"time": "5:00pm T TH"}
+        {"start_time": 0800, "end_time": 0850, "days": ["Mon", "Wed", "Fri"]},
+        {"start_time": 0900, "end_time": 0950, "days": ["Mon", "Wed", "Fri"]},
+        {"start_time": 1000, "end_time": 1050, "days": ["Tue", "Thu"]},
+        {"start_time": 1100, "end_time": 1150, "days": ["Tue", "Thu"]}
     ],
     "rooms": [
         {"room": "GS906"},
