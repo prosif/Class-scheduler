@@ -32,7 +32,6 @@ var MasterComponent = React.createClass({
                 })
             }.bind(this),
         });
-
     },
 
     onChangeClass: function(oldText, newText){
@@ -70,7 +69,7 @@ var MasterComponent = React.createClass({
 
         $.ajax({
             type: 'POST',
-            url: 'http://localhost:5000/teachers',
+            url: 'http://localhost:5000/update',
             data: {
                 "teachers": JSON.stringify(this.state.teachers)
             },
@@ -88,16 +87,24 @@ var MasterComponent = React.createClass({
         this.setState({
             rooms: tempRooms
         });
+    },
 
+    updateData: function(cb){
         $.ajax({
             type: 'POST',
-            url: 'http://localhost:5000/rooms',
+            url: 'http://localhost:5000/update',
             data: {
-                "rooms": JSON.stringify(this.state.rooms)
+                "classes": JSON.stringify(this.state.classes),
+                "teachers": JSON.stringify(this.state.teachers),
+                "rooms": JSON.stringify(this.state.rooms),
+                "times": JSON.stringify(this.state.times)
             },
             success: function(response){
                 console.log(response);
             }.bind(this),
+            complete: function(response){
+                cb && cb();
+            }
         });
     },
 
@@ -109,17 +116,6 @@ var MasterComponent = React.createClass({
         this.setState({
             classes: tempClasses
         });
-
-        $.ajax({
-            type: 'POST',
-            url: 'http://localhost:5000/classes',
-            data: {
-                "classes": JSON.stringify(this.state.classes)
-            },
-            success: function(response){
-                console.log(response);
-            }.bind(this),
-        });
     },
 
     onCreateTime: function(timeName){
@@ -129,17 +125,6 @@ var MasterComponent = React.createClass({
         
         this.setState({
             times: tempTimes
-        });
-
-        $.ajax({
-            type: 'POST',
-            url: 'http://localhost:5000/times',
-            data: {
-                "times": JSON.stringify(this.state.times)
-            },
-            success: function(response){
-                console.log(response);
-            }.bind(this),
         });
     },
 
@@ -349,6 +334,12 @@ var MasterComponent = React.createClass({
         });
 
     },
+
+    onSaveChanges: function(){
+        this.updateData(function(){
+            window.location.reload();
+        });
+    },
     
     render: function(){
         if(!this.state.teachers || !this.state.rooms || !this.state.classes || !this.state.times){
@@ -374,6 +365,7 @@ var MasterComponent = React.createClass({
                         onCreateRoom={this.onCreateRoom}
                         onCreateTime={this.onCreateTime}
                         onCreateClass={this.onCreateClass}
+                        onSaveChanges={this.onSaveChanges}
                     />
                     <TeachersTable onCreate={this.onCreateTeacherConstraint} onRemove={this.onRemoveTeacherConstraint} classes={this.state.classes} teachers={this.state.teachers} />
                     <RoomsTable onCreate={this.onCreateRoomConstraint} onRemove={this.onRemoveRoomConstraint} classes={this.state.classes} rooms={this.state.rooms} />

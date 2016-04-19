@@ -30,7 +30,7 @@ var ScheduleTable = React.createClass({
         }.bind(this));
 
         return(
-            <table>
+            <table id="schedule-table">
                 <thead>
                     <tr>{teacherHeaders}</tr>
                 </thead>

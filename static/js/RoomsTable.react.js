@@ -79,7 +79,7 @@ var RoomsTable = React.createClass({
         }.bind(this));
 
         return(
-            <table>
+            <table id="rooms-table">
                 <thead>
                     <tr>{roomHeaders}</tr>
                 </thead>

@@ -79,7 +79,7 @@ var TeacherTimeTable = React.createClass({
         }.bind(this));
 
         return(
-            <table>
+            <table id="teacher-time-table">
                 <thead>
                     <tr>{timeHeaders}</tr>
                 </thead>

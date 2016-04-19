@@ -79,7 +79,7 @@ var RoomTimeTable = React.createClass({
         }.bind(this));
 
         return(
-            <table>
+            <table id="room-time-table">
                 <thead>
                     <tr>{timeHeaders}</tr>
                 </thead>

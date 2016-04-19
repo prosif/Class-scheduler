@@ -115,7 +115,7 @@ var TeachersTable = React.createClass({
         teacherCountCells.unshift(<th scope="row" key="total">Total</th>);
 
         return(
-            <table>
+            <table id="teachers-table">
                 <thead>
                     <tr>{teacherHeaders}</tr>
                 </thead>

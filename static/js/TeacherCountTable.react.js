@@ -34,7 +34,7 @@ var TeacherCountTable = React.createClass({
             );
         }.bind(this));
         return (
-            <table>
+            <table id="teacher-count-table">
                 <tbody>
                     {rows}
                 </tbody>

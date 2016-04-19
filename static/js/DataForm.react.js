@@ -78,6 +78,10 @@ var DataForm = React.createClass({
 		});
 	},
 
+	onSaveChanges: function(){
+		this.props.onSaveChanges();
+	},
+
 	render: function(){
 		var classesList = this.props.classes.map(function(_class){
 			return <EditBox onConfirm={this.onChangeClass} key={_class.class} content={_class.class} />;
@@ -117,6 +121,7 @@ var DataForm = React.createClass({
 					{teachersList}
 					<li><input type="text" onChange={this.onTeacherAdd} value={this.state.teacherAdd}/><span onClick={this.onCreateTeacher}>add</span></li>
 				</ul>
+				<div onClick={this.onSaveChanges}>Save changes</div>
 			</div>
 		);
 	}
