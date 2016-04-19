@@ -359,9 +359,42 @@ var MasterComponent = React.createClass({
 
     onGenerate: function(){
 	var teachersNumCourses = {};
+	var teachersXCourses = {};
+	var coursesXRooms = {};
+	var teachersXTimes = {};
+	
+	console.log(this.state);
+	
 	for(var x in this.state.teachers){
 		teachersNumCourses[this.state.teachers[x].name] = 0;
 	}
+	// teacher course constraints
+	for(var a in this.state.teacherConstraints){
+		teachersXCourses[a] = [];
+		// go through course constraints for every teacher
+		for(var b in this.state.teacherConstraints[a]){
+			teachersXCourses[a].push(this.state.teacherConstraints[a][b]);
+		}
+	}
+
+	// room course constraints
+	for(var a in this.state.roomConstraints){
+		coursesXRooms[a] = [];
+		// go through course constraints for every room
+		for(var b in this.state.roomConstraints[a]){
+			coursesXRooms[a].push(this.state.roomConstraints[a][b]);
+		}
+	}
+
+	// teacher time constraints
+	for(var a in this.state.roomConstraints){
+		coursesXRooms[a] = [];
+		// go through course constraints for every room
+		for(var b in this.state.roomConstraints[a]){
+			coursesXRooms[a].push(this.state.roomConstraints[a][b]);
+		}
+	}
+
         $.ajax({
             type: 'POST',
             url: 'http://192.168.56.101/generate',
@@ -370,7 +403,10 @@ var MasterComponent = React.createClass({
                 "classes": JSON.stringify(this.state.classes), 
                 "rooms": JSON.stringify(this.state.rooms), 
                 "times": JSON.stringify(this.state.times),
-		"teachersNumCourses": JSON.stringify(teachersNumCourses)
+		"teachersNumCourses": JSON.stringify(teachersNumCourses),
+		"teachersXcourses": JSON.stringify(teachersXCourses),
+		"coursesXrooms": JSON.stringify(coursesXRooms),
+		"teachersXtimes": JSON.stringify(teachersXTimes)
             },
             success: function(response){
                 this.onGenerateSuccess(JSON.parse(response));
