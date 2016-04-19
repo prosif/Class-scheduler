@@ -20,44 +20,14 @@ def data():
     return json.dumps(data)
 
 
-@app.route('/rooms', methods=['POST'])
-def create_room():
-    with open('data.json', 'r+') as data_file:
-        current_data = json.load(data_file)
-        current_data['rooms'] = json.loads(request.form['rooms'])
-        data_file.seek(0)
-        json.dump(current_data, data_file)
-        data_file.truncate()
-    return "Cool"
-
-
-@app.route('/teachers', methods=['POST'])
-def create_teacher():
-    with open('data.json', 'r+') as data_file:
-        current_data = json.load(data_file)
-        current_data['teachers'] = json.loads(request.form['teachers'])
-        data_file.seek(0)
-        json.dump(current_data, data_file)
-        data_file.truncate()
-    return "Cool"
-
-
-@app.route('/times', methods=['POST'])
-def create_time():
-    with open('data.json', 'r+') as data_file:
-        current_data = json.load(data_file)
-        current_data['times'] = json.loads(request.form['times'])
-        data_file.seek(0)
-        json.dump(current_data, data_file)
-        data_file.truncate()
-    return "Cool"
-
-
-@app.route('/classes', methods=['POST'])
-def create_class():
+@app.route('/update', methods=['POST'])
+def update_data():
     with open('data.json', 'r+') as data_file:
         current_data = json.load(data_file)
         current_data['classes'] = json.loads(request.form['classes'])
+        current_data['rooms'] = json.loads(request.form['rooms'])
+        current_data['teachers'] = json.loads(request.form['teachers'])
+        current_data['times'] = json.loads(request.form['times'])
         data_file.seek(0)
         json.dump(current_data, data_file)
         data_file.truncate()
