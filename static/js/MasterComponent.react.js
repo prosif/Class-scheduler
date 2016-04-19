@@ -14,7 +14,8 @@ var MasterComponent = React.createClass({
             roomConstraints: {},
             timeConstraints: {},
             teacherTimeConstraints: {},
-            roomTimeConstraints: {}
+            roomTimeConstraints: {},
+	    teacherCounts: null
         });
     },
 
@@ -29,7 +30,15 @@ var MasterComponent = React.createClass({
                     classes: parsed.classes,
                     times: parsed.times,
                     rooms: parsed.rooms
-                })
+                }, function(){
+		    var teacherCountObj = {};
+		    this.state.teachers.map(function(teacher){
+			if(!(teacher.name in teacherCountObj)){
+				teacherCountObj[teacher.name] = 0;
+			}
+		   });
+		   this.setState({teacherCounts: teacherCountObj});
+		}.bind(this));
             }.bind(this),
         });
     },
@@ -355,16 +364,12 @@ var MasterComponent = React.createClass({
     },
 
     onGenerate: function(){
-	var teachersNumCourses = {};
 	var teachersXCourses = {};
 	var coursesXRooms = {};
 	var teachersXTimes = {};
 	var roomsXTimes = {};
 	var coursesXTimes = {};
 	
-	for(var x in this.state.teachers){
-		teachersNumCourses[this.state.teachers[x].name] = 0;
-	}
 	// teacher course constraints
 	for(var a in this.state.teacherConstraints){
 		teachersXCourses[a] = [];
@@ -409,7 +414,7 @@ var MasterComponent = React.createClass({
 		}
 	}
 
-	console.log("teachersNumCourses:");
+	/*console.log("teachersNumCourses:");
 	console.log(teachersNumCourses);
 	console.log("teachersXCourses:");
 	console.log(teachersXCourses);
@@ -421,7 +426,7 @@ var MasterComponent = React.createClass({
 	console.log(roomsXTimes);
 	console.log("coursesXtimes:");
 	console.log(coursesXTimes);
-
+	*/
         $.ajax({
             type: 'POST',
             url: 'http://192.168.56.101/generate',
@@ -430,7 +435,7 @@ var MasterComponent = React.createClass({
                 "classes": JSON.stringify(this.state.classes), 
                 "rooms": JSON.stringify(this.state.rooms), 
                 "times": JSON.stringify(this.state.times),
-		"teachersNumCourses": JSON.stringify(teachersNumCourses),
+		"teachersNumCourses": JSON.stringify(this.state.teacherCounts),
 		"teachersXcourses": JSON.stringify(teachersXCourses),
 		"coursesXrooms": JSON.stringify(coursesXRooms),
 		"teachersXtimes": JSON.stringify(teachersXTimes),
@@ -449,9 +454,15 @@ var MasterComponent = React.createClass({
             window.location.reload();
         });
     },
+
+    onTeacherCountChange: function(teacher, val){
+	var tempCounts = this.state.teacherCounts;
+	tempCounts[teacher] = Number(val);
+	this.setState({teacherCounts: tempCounts});
+    },
     
     render: function(){
-        if(!this.state.teachers || !this.state.rooms || !this.state.classes || !this.state.times){
+        if(!this.state.teachers || !this.state.rooms || !this.state.classes || !this.state.times || !this.state.teacherCounts){
             return <div>Loading...</div>
         }
         var schedule;
@@ -485,7 +496,7 @@ var MasterComponent = React.createClass({
                     <TimesTable onCreate={this.onCreateTimeConstraint} onRemove={this.onRemoveTimeConstraint} classes={this.state.classes} times={this.state.times} />
                     <TeacherTimeTable onCreate={this.onCreateTeacherTimeConstraint} onRemove={this.onRemoveTeacherTimeConstraint} teachers={this.state.teachers} times={this.state.times} />
                     <RoomTimeTable onCreate={this.onCreateRoomTimeConstraint} onRemove={this.onRemoveRoomTimeConstraint} rooms={this.state.rooms} times={this.state.times} />
-                    <TeacherCountTable teachers={this.state.teachers} />
+                    <TeacherCountTable counts={this.state.teacherCounts} onChange={this.onTeacherCountChange} teachers={this.state.teachers} />
                 </div>
                 <div>
                     <button onClick={this.onGenerate} type="button" className="btn btn-primary">Generate Schedule</button>

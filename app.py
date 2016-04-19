@@ -67,7 +67,15 @@ def generate():
 		times.append(str(time['start_time']) + str(time['end_time']))		
 	print times
 
-	teachersNumCourses = json.loads(request.form['teachersNumCourses'])
+	teachersNumCoursesIn = json.loads(request.form['teachersNumCourses'])
+	teachersNumCourses = {}
+	# convert from unicode to string
+	for teacher in teachersNumCoursesIn:
+		print str(teacher)
+		print teachersNumCoursesIn[teacher]
+		teachersNumCourses[str(teacher)] = teachersNumCoursesIn[teacher]
+	print "teachersNumCourses"
+	print teachersNumCourses
 	
 	teacher_constraints = {}
 	teacher_course_constraints = json.loads(request.form['teachersXcourses'])
@@ -340,12 +348,12 @@ def generate():
 			defineConstraint([room,time], constraintName, 1, 1)
 
 	#Solve the problem and print all the data
-	#print
-	#print "Errors: {}".format(lp.simplex())
-	#print lp.status
-	#print "Errors: {}".format(lp.integer())
-	#print "Status: {}".format(lp.status)
-	#print
+	print
+	print "Errors: {}".format(lp.simplex())
+	print lp.status
+	print "Errors: {}".format(lp.integer())
+	print "Status: {}".format(lp.status)
+	print
 
 	#print "---OBJECTIVE DESIRABILITY VALUES---"
 	for te in teachers:
@@ -353,25 +361,26 @@ def generate():
 			for r in rooms:
 				for ti in times:
 					colName = te+'-'+c+'-'+r+'-'+ti
-					#print colName, lp.obj[colName]
-	#print
+					print colName, lp.obj[colName]
+	print
 
-	#print "---CONSTRAINTS---"
+	print "---CONSTRAINTS---"
 	for row in lp.rows:
-		pass
-	#	print row.name+" has a sum bound to be between",row.bounds[0], "and",row.bounds[1]
+		print row.name+" has a sum bound to be between",row.bounds[0], "and",row.bounds[1]
 
-	#print
+	print
 
-	#print "---SOLUTION---"
+	print "---SOLUTION---"
 
+	string_solution = ""
 	for c in lp.cols:
 		if c.primal!=0:
-			pass
-	#		print "{} = {}".format(c.name, c.primal)
+			to_add = "{} = {}\n".format(c.name, c.primal)
+			string_solution += to_add
 
+	print string_solution
 
-    	return "HEY!"#json.dumps("")
+    	return json.dumps("Cool!")
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=80)
