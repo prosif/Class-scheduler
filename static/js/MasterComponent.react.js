@@ -46,6 +46,54 @@ var MasterComponent = React.createClass({
         });
     },
 
+    onDeleteClass: function(text){
+        var tempClasses = this.state.classes;
+        for(var x in tempClasses){
+            if(tempClasses[x].class == text){
+                tempClasses.splice(x, 1);
+            }
+        }
+        this.setState({
+            classes: tempClasses
+        });
+    },
+
+    onDeleteRoom: function(text){
+        var tempRooms = this.state.rooms;
+        for(var x in tempRooms){
+            if(tempRooms[x].room == text){
+                tempRooms.splice(x, 1);
+            }
+        }
+        this.setState({
+            rooms: tempRooms
+        });
+    },
+
+    onDeleteTime: function(text){
+        var tempTimes = this.state.times;
+        for(var x in tempTimes){
+            if(tempTimes[x].start_time + tempTimes[x].end_time == text){
+                tempTimes.splice(x, 1);
+            }
+        }
+        this.setState({
+            times: tempTimes
+        });
+    },
+
+    onDeleteTeacher: function(text){
+        var tempTeachers = this.state.teachers;
+        for(var x in tempTeachers){
+            if(tempTeachers[x].name == text){
+                tempTeachers.splice(x, 1);
+            }
+        }
+        this.setState({
+            teachers: tempTeachers
+        });
+    },
+
     onChangeTeacher: function(oldText, newText){
         var tempTeachers = this.state.teachers;
         for(var x in tempTeachers){
@@ -65,17 +113,6 @@ var MasterComponent = React.createClass({
         
         this.setState({
             teachers: tempTeachers
-        });
-
-        $.ajax({
-            type: 'POST',
-            url: 'http://localhost:5000/update',
-            data: {
-                "teachers": JSON.stringify(this.state.teachers)
-            },
-            success: function(response){
-                console.log(response);
-            }.bind(this),
         });
     },
 
@@ -365,6 +402,10 @@ var MasterComponent = React.createClass({
                         onCreateRoom={this.onCreateRoom}
                         onCreateTime={this.onCreateTime}
                         onCreateClass={this.onCreateClass}
+                        onDeleteTeacher={this.onDeleteTeacher}
+                        onDeleteTime={this.onDeleteTime}
+                        onDeleteRoom={this.onDeleteRoom}
+                        onDeleteClass={this.onDeleteClass}
                         onSaveChanges={this.onSaveChanges}
                     />
                     <TeachersTable onCreate={this.onCreateTeacherConstraint} onRemove={this.onRemoveTeacherConstraint} classes={this.state.classes} teachers={this.state.teachers} />

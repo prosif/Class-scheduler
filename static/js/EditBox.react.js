@@ -32,13 +32,18 @@ var EditBox = React.createClass({
 		})
 	},
 
+	onDelete: function(){
+		this.props.onDelete(this.props.content);
+	},
+
 	render: function(){
 		if(this.state.editing){
 			return (
 				<li>
 					<input type="text" value={this.state.content} onChange={this.onChange} />
-					<span onClick={this.onCancel} className="glyphicon glyphicon-remove" />
-					<span onClick={this.onConfirm} className="glyphicon glyphicon-ok" />
+					<div className="btn btn-default" onClick={this.onCancel}>Cancel</div>
+					<div className="btn btn-default" onClick={this.onConfirm}>Confirm </div>
+					<div className="btn btn-default" onClick={this.onDelete}>Delete</div>
 				</li>
 			);
 		}

@@ -26,6 +26,22 @@ var DataForm = React.createClass({
 		this.props.onChangeTeacher(oldText, newText);
 	},
 
+	onDeleteClass: function(text){
+		this.props.onDeleteClass(text);
+	},
+
+	onDeleteTeacher: function(text){
+		this.props.onDeleteTeacher(text);
+	},
+
+	onDeleteRoom: function(text){
+		this.props.onDeleteRoom(text);
+	},
+
+	onDeleteTime: function(text){
+		this.props.onDeleteTime(text);
+	},
+
 	onTeacherAdd: function(e){
 		this.setState({
 			teacherAdd: e.target.value
@@ -84,19 +100,19 @@ var DataForm = React.createClass({
 
 	render: function(){
 		var classesList = this.props.classes.map(function(_class){
-			return <EditBox onConfirm={this.onChangeClass} key={_class.class} content={_class.class} />;
+			return <EditBox onDelete={this.onDeleteClass} onConfirm={this.onChangeClass} key={_class.class} content={_class.class} />;
 		}.bind(this));
 
 		var timesList = this.props.times.map(function(time){
-			return <EditBox onConfirm={this.onChangeTime} key={time.start_time + time.end_time} content={time.start_time + time.end_time} />;
+			return <EditBox onDelete={this.onDeleteTime} onConfirm={this.onChangeTime} key={time.start_time + time.end_time} content={time.start_time + time.end_time} />;
 		}.bind(this));
 
 		var roomsList = this.props.rooms.map(function(room){
-			return <EditBox onConfirm={this.onChangeRoom} key={room.room} content={room.room} />;
+			return <EditBox onDelete={this.onDeleteRoom} onConfirm={this.onChangeRoom} key={room.room} content={room.room} />;
 		}.bind(this));
 
 		var teachersList = this.props.teachers.map(function(teacher){
-			return <EditBox onConfirm={this.onChangeTeacher} key={teacher.name} content={teacher.name} />;
+			return <EditBox onDelete={this.onDeleteTeacher} onConfirm={this.onChangeTeacher} key={teacher.name} content={teacher.name} />;
 		}.bind(this));
 
 		return (
