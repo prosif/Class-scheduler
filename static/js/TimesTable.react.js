@@ -11,7 +11,7 @@ var TimesTable = React.createClass({
 
 
     onTimeClick: function(_class, time){
-        var currentStatus = this.state.timeStatuses[time.time + _class.class],
+        var currentStatus = this.state.timeStatuses[time.start_time + time.end_time + _class.class],
             constraint;
         switch(currentStatus){
             case null:

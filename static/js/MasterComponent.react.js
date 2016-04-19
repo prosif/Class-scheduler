@@ -159,8 +159,6 @@ var MasterComponent = React.createClass({
         var tempTimes = this.state.times,
             newTime = {start_time: timeName, end_time: timeName, days: ["Mon", "Tue", "Wed"]};
         tempTimes.push(newTime);
-	console.log("Just pushed ");
-	console.log(newTime);
         
         this.setState({
             times: tempTimes
@@ -289,33 +287,32 @@ var MasterComponent = React.createClass({
 
     onCreateTeacherTimeConstraint: function(constraint){
         var currentTeacherTimeConstraints = this.state.teacherTimeConstraints;
-        if(!(constraint.time in currentTeacherTimeConstraints)){
-            currentTeacherTimeConstraints[constraint.time] = [];
+        if(!(constraint.teacher in currentTeacherTimeConstraints)){
+            currentTeacherTimeConstraints[constraint.teacher] = [];
         }
-        currentTeacherTimeConstraints[constraint.time].push(constraint.teacher);
+        currentTeacherTimeConstraints[constraint.teacher].push(constraint.time);
         this.setState({
             teacherTimeConstraints: currentTeacherTimeConstraints
         });
     },
 
-    onRemoveTeacherTimeConstraint: function(time, teacher){
+    onRemoveTeacherTimeConstraint: function(teacher, time){
         var temp = this.state.teacherTimeConstraints;
-        var currentConstraints = this.state.teacherTimeConstraints[time];
-        
+        var currentConstraints = this.state.teacherTimeConstraints[teacher];
         if(!currentConstraints){
             return;
         }
 
-        var index = currentConstraints.indexOf(teacher);
+        var index = currentConstraints.indexOf(time);
         if(index > -1){
             currentConstraints.splice(index, 1);
         }
 
-        index = currentConstraints.indexOf("not " + _class);
+        index = currentConstraints.indexOf("not " + time);
         if(index > -1){
             currentConstraints.splice(index, 1);
         }
-        temp[time] = currentConstraints;
+        temp[teacher] = currentConstraints;
         this.setState({timeConstraints: temp});
     },
     
