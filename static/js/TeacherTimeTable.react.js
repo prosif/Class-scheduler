@@ -12,8 +12,6 @@ var TeacherTimeTable = React.createClass({
     onTimeClick: function(teacher, time){
         var currentStatus = this.state.timeStatuses[teacher.name + time.start_time + time.end_time],
             constraint;
-	console.log("Current status:");
-	console.log(currentStatus);
         switch(currentStatus){
             case null:
                 currentStatus = "yes";

@@ -261,13 +261,13 @@ var MasterComponent = React.createClass({
         currentRoomTimeConstraints[constraint.room].push(constraint.time);
         this.setState({
             roomTimeConstraints: currentRoomTimeConstraints
-        });
+    	});
     },
 
-    onRemoveRoomTimeConstraint: function(time, room){
+    onRemoveRoomTimeConstraint: function(room, time){
         var temp = this.state.roomTimeConstraints;
         var currentConstraints = this.state.roomTimeConstraints[room];
-        
+
         if(!currentConstraints){
             return;
         }
@@ -313,7 +313,7 @@ var MasterComponent = React.createClass({
             currentConstraints.splice(index, 1);
         }
         temp[teacher] = currentConstraints;
-        this.setState({timeConstraints: temp});
+        this.setState({teacherTimeConstraints: temp});
     },
     
     onCreateTimeConstraint: function(constraint){
@@ -359,8 +359,8 @@ var MasterComponent = React.createClass({
 	var teachersXCourses = {};
 	var coursesXRooms = {};
 	var teachersXTimes = {};
-	
-	console.log(this.state);
+	var roomsXTimes = {};
+	var coursesXTimes = {};
 	
 	for(var x in this.state.teachers){
 		teachersNumCourses[this.state.teachers[x].name] = 0;
@@ -382,15 +382,45 @@ var MasterComponent = React.createClass({
 			coursesXRooms[a].push(this.state.roomConstraints[a][b]);
 		}
 	}
-
-	// teacher time constraints
-	for(var a in this.state.roomConstraints){
-		coursesXRooms[a] = [];
-		// go through course constraints for every room
-		for(var b in this.state.roomConstraints[a]){
-			coursesXRooms[a].push(this.state.roomConstraints[a][b]);
+	
+	// course time constrains
+	for(var a in this.state.timeConstraints){
+		coursesXTimes[a] = [];
+		// go through time constraints for every course
+		for(var b in this.state.timeConstraints[a]){
+			coursesXTimes[a].push(this.state.timeConstraints[a][b]);
 		}
 	}
+
+	// room time constraints
+	for(var a in this.state.roomTimeConstraints){
+		roomsXTimes[a] = [];
+		// go through time constraints for every teacher
+		for(var b in this.state.roomTimeConstraints[a]){
+			roomsXTimes[a].push(this.state.roomTimeConstraints[a][b]);
+		}
+	}
+	// teacher time constraints
+	for(var a in this.state.teacherTimeConstraints){
+		teachersXTimes[a] = [];
+		// go through time constraints for every teacher
+		for(var b in this.state.teacherTimeConstraints[a]){
+			teachersXTimes[a].push(this.state.teacherTimeConstraints[a][b]);
+		}
+	}
+
+	console.log("teachersNumCourses:");
+	console.log(teachersNumCourses);
+	console.log("teachersXCourses:");
+	console.log(teachersXCourses);
+	console.log("coursesXrooms:");
+	console.log(coursesXRooms);
+	console.log("teachersXtimes:");
+	console.log(teachersXTimes);
+	console.log("roomsXtimes:");
+	console.log(roomsXTimes);
+	console.log("coursesXtimes:");
+	console.log(coursesXTimes);
 
         $.ajax({
             type: 'POST',
@@ -403,7 +433,9 @@ var MasterComponent = React.createClass({
 		"teachersNumCourses": JSON.stringify(teachersNumCourses),
 		"teachersXcourses": JSON.stringify(teachersXCourses),
 		"coursesXrooms": JSON.stringify(coursesXRooms),
-		"teachersXtimes": JSON.stringify(teachersXTimes)
+		"teachersXtimes": JSON.stringify(teachersXTimes),
+		"roomsXtimes": JSON.stringify(roomsXTimes),
+		"coursesXtimes": JSON.stringify(coursesXTimes)
             },
             success: function(response){
                 this.onGenerateSuccess(JSON.parse(response));

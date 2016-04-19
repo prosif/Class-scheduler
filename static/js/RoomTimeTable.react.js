@@ -19,7 +19,7 @@ var RoomTimeTable = React.createClass({
                 break;
             case "yes":
                 currentStatus = "no";
-                constraint = {toom: room.room, time: "not " + time.start_time + time.end_time}
+                constraint = {room: room.room, time: "not " + time.start_time + time.end_time}
                 break;
             default:
                 currentStatus = null;
