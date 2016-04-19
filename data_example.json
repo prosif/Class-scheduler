@@ -23,10 +23,10 @@
         {"class": "CSC452"}
     ],
     "times": [
-        {"start_time": 0800, "end_time": 0850, "days": ["Mon", "Wed", "Fri"]},
-        {"start_time": 0900, "end_time": 0950, "days": ["Mon", "Wed", "Fri"]},
-        {"start_time": 1000, "end_time": 1050, "days": ["Tue", "Thu"]},
-        {"start_time": 1100, "end_time": 1150, "days": ["Tue", "Thu"]}
+        {"start_time": "0800", "end_time": "0850", "days": ["Mon", "Wed", "Fri"]},
+        {"start_time": "0900", "end_time": "0950", "days": ["Mon", "Wed", "Fri"]},
+        {"start_time": "1000", "end_time": "1050", "days": ["Tue", "Thu"]},
+        {"start_time": "1100", "end_time": "1150", "days": ["Tue", "Thu"]}
     ],
     "rooms": [
         {"room": "GS906"},
