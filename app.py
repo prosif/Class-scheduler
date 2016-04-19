@@ -46,7 +46,7 @@ def js(filename):
 
 
 @app.route("/generate", methods=['POST'])
-def hello():
+def generate():
 	teachers = []
 	courses = []
 	rooms = []
@@ -64,7 +64,7 @@ def hello():
 	print rooms
 
 	for time in json.loads(request.form['times']):
-		times.append(str(time['start_time']))		
+		times.append(str(time['start_time']) + str(time['end_time']))		
 	print times
 
 	teachersNumCourses = json.loads(request.form['teachersNumCourses'])
@@ -91,6 +91,9 @@ def hello():
 			else:
 				teacher_list.append(.5)
 		teachersXcourses.append(teacher_list)
+
+	print "teachersXcourses:"
+	print teachersXcourses
 		
 	course_constraints = {}
 	course_room_constraints = json.loads(request.form['coursesXrooms'])
@@ -114,7 +117,10 @@ def hello():
 			else:
 				course_list.append(.5)
 		coursesXrooms.append(course_list)
-		
+	
+	print "coursesXrooms:"
+	print coursesXrooms		
+
 	teacher_constraints = {}
 	teacher_time_constraints = json.loads(request.form['teachersXtimes'])
 	for teacher in teacher_time_constraints:
@@ -127,7 +133,7 @@ def hello():
 	for teacher in teachers:
 		teacher_list = []
 		for time in times:
-			if time in teacher_constraints:
+			if teacher in teacher_constraints:
 				if time in teacher_constraints[teacher]:
 					teacher_list.append(1)
 				elif "not " + time in teacher_constraints[teacher]:
@@ -137,30 +143,65 @@ def hello():
 			else:
 				teacher_list.append(.5)
 		teachersXtimes.append(teacher_list)
-		
-	print "Teachers:"
-	print teachers
-	print "Times:"
-	print times
-	print "Input constraints:"
-	print teacher_constraints
-	print "Results:"
+	
+	print "teachersXtimes:"
 	print teachersXtimes
+	
+	room_constraints = {}
+	room_time_constraints = json.loads(request.form['roomsXtimes'])
+	for room in room_time_constraints:
+		if str(room) not in room_constraints:
+			room_constraints[str(room)] = []
+		for constraint in room_time_constraints[room]:
+			room_constraints[str(room)].append(str(constraint))
+	
+	roomsXtimes = []
+	for room in rooms:
+		room_list = []
+		for time in times:
+			if room in room_constraints:
+				if time in room_constraints[room]:
+					room_list.append(1)
+				elif "not " + time in room_constraints[room]:
+					room_list.append(0)
+				else:
+					room_list.append(.5)
+			else:
+				room_list.append(.5)
+		roomsXtimes.append(room_list)
+	
+	print "roomsXtimes:"
+	print roomsXtimes
 
-
-	teachersXtimes =	[[.5, .5,  .5, .5],
-				 [.5,  0,  0, .5],
-				 [ 1,  0,  0, .5],
-				 [ 0, .5, .5, .5]]
+	course_constraints = {}
+	course_time_constraints = json.loads(request.form['coursesXtimes'])
+	for time in course_time_constraints:
+		if str(time) not in course_constraints:
+			course_constraints[str(time)] = []
+		for constraint in course_time_constraints[time]:
+			course_constraints[str(time)].append(str(constraint))
+	
+	coursesXtimes = []
+	for course in courses:
+		course_list = []
+		for time in times:
+			if time in course_constraints:
+				if course in course_constraints[time]:
+					course_list.append(1)
+				elif "not " + course in course_constraints[time]:
+					course_list.append(0)
+				else:
+					course_list.append(.5)
+			else:
+				course_list.append(.5)
+		coursesXtimes.append(course_list)
+	
+	print "courseXtimes:"
+	print coursesXtimes
 
 	coursesXtimes = 	[[ 0,  0, .5, .5],
 				 [ 0, .5,  0, .5],
 				 [.5, .5, .5, .5],
-				 [.5, .5,  0, .5]]
-
-	roomsXtimes = 		[[.5, .5, .5, .5],
-				 [.5, .5, .5, .5],
-				 [ 0, .5,  0, .5],
 				 [.5, .5,  0, .5]]
 
 	lp = glpk.LPX()
