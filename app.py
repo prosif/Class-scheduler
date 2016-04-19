@@ -68,25 +68,90 @@ def hello():
 	print times
 
 	teachersNumCourses = json.loads(request.form['teachersNumCourses'])
-	teachersXcourses = 	[[.5, .5,  0,  0],
-				 [.5,  0, .5,  0],
-				 [ 0, .5,  0,  1],
-				 [ 1,  0, .5, .5]]
+	
+	teacher_constraints = {}
+	teacher_course_constraints = json.loads(request.form['teachersXcourses'])
+	for teacher in teacher_course_constraints:
+		if str(teacher) not in teacher_constraints:
+			teacher_constraints[str(teacher)] = []
+		for constraint in teacher_course_constraints[teacher]:
+			teacher_constraints[teacher].append(str(constraint))
+	
+	teachersXcourses = []
+	for teacher in teachers:
+		teacher_list = []
+		for course in courses:
+			if teacher in teacher_constraints:
+				if course in teacher_constraints[teacher]:
+					teacher_list.append(1)
+				elif "not " + course in teacher_constraints[teacher]:
+					teacher_list.append(0)
+				else:
+					teacher_list.append(.5)
+			else:
+				teacher_list.append(.5)
+		teachersXcourses.append(teacher_list)
+		
+	course_constraints = {}
+	course_room_constraints = json.loads(request.form['coursesXrooms'])
+	for course in course_room_constraints:
+		if str(course) not in course_constraints:
+			course_constraints[str(course)] = []
+		for constraint in course_room_constraints[course]:
+			course_constraints[course].append(str(constraint))
+	
+	coursesXrooms = []
+	for course in courses:
+		course_list = []
+		for room in rooms:
+			if room in course_constraints:
+				if course in course_constraints[room]:
+					course_list.append(1)
+				elif "not " + course in course_constraints[room]:
+					course_list.append(0)
+				else:
+					course_list.append(.5)
+			else:
+				course_list.append(.5)
+		coursesXrooms.append(course_list)
+		
+	teacher_constraints = {}
+	teacher_time_constraints = json.loads(request.form['teachersXtimes'])
+	for teacher in teacher_time_constraints:
+		if str(teacher) not in teacher_constraints:
+			teacher_constraints[str(teacher)] = []
+		for constraint in teacher_time_constraints[teacher]:
+			teacher_constraints[teacher].append(str(constraint))
+	
+	teachersXtimes = []
+	for teacher in teachers:
+		teacher_list = []
+		for time in times:
+			if time in teacher_constraints:
+				if time in teacher_constraints[teacher]:
+					teacher_list.append(1)
+				elif "not " + time in teacher_constraints[teacher]:
+					teacher_list.append(0)
+				else:
+					teacher_list.append(.5)
+			else:
+				teacher_list.append(.5)
+		teachersXtimes.append(teacher_list)
+		
+	print "Teachers:"
+	print teachers
+	print "Times:"
+	print times
+	print "Input constraints:"
+	print teacher_constraints
+	print "Results:"
+	print teachersXtimes
 
-	teachersXrooms =	[[.5, .5,  0, .5],
-				 [.5,  1,  0,  0],
-				 [.5,  0,  0, .5],
-				 [ 0, .5, .5, .5]]
 
 	teachersXtimes =	[[.5, .5,  .5, .5],
 				 [.5,  0,  0, .5],
 				 [ 1,  0,  0, .5],
 				 [ 0, .5, .5, .5]]
-
-	coursesXrooms = 	[[.5, .5,  0, .5],
-				 [ 0,  1, .5, .5],
-				 [.5, .5, .5, .5],
-				 [.5, .5, .5, .5]]
 
 	coursesXtimes = 	[[ 0,  0, .5, .5],
 				 [ 0, .5,  0, .5],
@@ -163,19 +228,19 @@ def hello():
 			constraintName = teacher+"MustTeachCourse"+course
 			defineConstraint([teacher,course], constraintName, 1, 1)
 
-	for i, row in enumerate(teachersXrooms):
-		teacher = teachers[i]	
-		cantTeachRoomIndexes = [roomIndex for roomIndex, val in enumerate(row) if val == 0]
-		cantTeachRoom = [rooms[j] for j in cantTeachRoomIndexes]
-		for room in cantTeachRoom:	
-			constraintName = teacher+"CantTeachRoom"+room
-			defineConstraint([teacher,room], constraintName, 0, 0)
+	#for i, row in enumerate(teachersXrooms):
+	#	teacher = teachers[i]	
+	#	cantTeachRoomIndexes = [roomIndex for roomIndex, val in enumerate(row) if val == 0]
+	#	cantTeachRoom = [rooms[j] for j in cantTeachRoomIndexes]
+	#	for room in cantTeachRoom:	
+	#		constraintName = teacher+"CantTeachRoom"+room
+	#		defineConstraint([teacher,room], constraintName, 0, 0)
 
-		mustTeachRoomIndexes = [roomIndex for roomIndex, val in enumerate(row) if val == 1]
-		mustTeachRoom = [rooms[j] for j in mustTeachRoomIndexes]
-		for room in mustTeachRoom:	
-			constraintName = teacher+"MustTeachRoom"+room
-			defineConstraint([teacher,room], constraintName, 1, 1)
+#		mustTeachRoomIndexes = [roomIndex for roomIndex, val in enumerate(row) if val == 1]
+#		mustTeachRoom = [rooms[j] for j in mustTeachRoomIndexes]
+#		for room in mustTeachRoom:	
+#			constraintName = teacher+"MustTeachRoom"+room
+#			defineConstraint([teacher,room], constraintName, 1, 1)
 
 	for i, row in enumerate(teachersXtimes):
 		teacher = teachers[i]	
