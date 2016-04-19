@@ -21,7 +21,7 @@ var MasterComponent = React.createClass({
     componentDidMount: function(){
         $.ajax({
             type: 'GET',
-            url: 'http://localhost:5000/data',
+            url: 'http://192.168.56.101/data',
             success: function(response){
                 var parsed = JSON.parse(response);
                 this.setState({
@@ -129,7 +129,7 @@ var MasterComponent = React.createClass({
     updateData: function(cb){
         $.ajax({
             type: 'POST',
-            url: 'http://localhost:5000/update',
+            url: 'http://192.168.56.101/update',
             data: {
                 "classes": JSON.stringify(this.state.classes),
                 "teachers": JSON.stringify(this.state.teachers),
@@ -157,8 +157,10 @@ var MasterComponent = React.createClass({
 
     onCreateTime: function(timeName){
         var tempTimes = this.state.times,
-            newTime = {time: timeName};
+            newTime = {start_time: timeName, end_time: timeName, days: ["Mon", "Tue", "Wed"]};
         tempTimes.push(newTime);
+	console.log("Just pushed ");
+	console.log(newTime);
         
         this.setState({
             times: tempTimes
@@ -356,14 +358,19 @@ var MasterComponent = React.createClass({
     },
 
     onGenerate: function(){
+	var teachersNumCourses = {};
+	for(var x in this.state.teachers){
+		teachersNumCourses[this.state.teachers[x].name] = 0;
+	}
         $.ajax({
             type: 'POST',
-            url: 'http://localhost:5000/generate',
+            url: 'http://192.168.56.101/generate',
             data: {
                 "teachers": JSON.stringify(this.state.teachers), 
                 "classes": JSON.stringify(this.state.classes), 
                 "rooms": JSON.stringify(this.state.rooms), 
-                "times": JSON.stringify(this.state.times)
+                "times": JSON.stringify(this.state.times),
+		"teachersNumCourses": JSON.stringify(teachersNumCourses)
             },
             success: function(response){
                 this.onGenerateSuccess(JSON.parse(response));
@@ -380,7 +387,7 @@ var MasterComponent = React.createClass({
     
     render: function(){
         if(!this.state.teachers || !this.state.rooms || !this.state.classes || !this.state.times){
-            return <div>Loading</div>
+            return <div>Loading...</div>
         }
         var schedule;
         if(this.state.completedSchedule){
