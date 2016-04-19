@@ -357,10 +357,13 @@ var MasterComponent = React.createClass({
         this.setState({timeConstraints: temp});
     },
 
-    onGenerateSuccess: function(schedule){
+    onGenerateSuccess: function(response){
         this.setState({
-            completedSchedule: schedule
-        })
+		scheduleItems: response.results
+	});
+	//this.setState({
+        //    completedSchedule: schedule
+        //})
     },
 
     onGenerate: function(){
@@ -469,6 +472,12 @@ var MasterComponent = React.createClass({
         if(this.state.completedSchedule){
             schedule = <ScheduleTable schedule={this.state.completedSchedule} teachers={this.state.teachers} classes={this.state.classes} />
         }
+	if(this.state.scheduleItems){
+		var listItems = this.state.scheduleItems.map(function(item){
+			return <li key={item.course + item.time}>{item.course} - {item.room} - {item.teacher} - {item.time}</li>
+		});
+		schedule = <ul>{listItems}</ul>;
+	}
         return (
             <div>
                 <div>

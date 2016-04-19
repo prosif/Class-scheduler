@@ -372,15 +372,19 @@ def generate():
 
 	print "---SOLUTION---"
 
-	string_solution = ""
+	#string_solution = ""
+	results = {"results": []}
 	for c in lp.cols:
 		if c.primal!=0:
-			to_add = "{} = {}\n".format(c.name, c.primal)
-			string_solution += to_add
+			pieces = c.name.split("-")
+			to_add = {"teacher": pieces[0], "course": pieces[1], "room": pieces[2], "time": pieces[3]} 
+			#to_add = "{} = {}".format(c.name, c.primal)
+			results['results'].append(to_add)
+			#string_solution += to_add
 
-	print string_solution
+	print results
 
-    	return json.dumps("Cool!")
+    	return json.dumps(results);
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=80)

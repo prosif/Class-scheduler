@@ -117,22 +117,22 @@ var DataForm = React.createClass({
 
 		return (
 			<div id="data-lists">
-				<ul>
+				<ul className="input">
 					<lh><strong>Classes</strong></lh>
 					{classesList}
 					<li><input type="text" onChange={this.onClassAdd} value={this.state.classAdd}/><span onClick={this.onCreateClass}>add</span></li>
 				</ul>
-				<ul>
+				<ul className="input">
 					<lh><strong>Times</strong></lh>
 					{timesList}
 					<li><input type="text" onChange={this.onTimeAdd} value={this.state.timeAdd}/><span onClick={this.onCreateTime}>add</span></li>
 				</ul>
-				<ul>
+				<ul className="input">
 					<lh><strong>Rooms</strong></lh>
 					{roomsList}
 					<li><input type="text" onChange={this.onRoomAdd} value={this.state.roomAdd}/><span onClick={this.onCreateRoom}>add</span></li>
 				</ul>
-				<ul>
+				<ul className="input">
 					<lh><strong>Teachers</strong></lh>
 					{teachersList}
 					<li><input type="text" onChange={this.onTeacherAdd} value={this.state.teacherAdd}/><span onClick={this.onCreateTeacher}>add</span></li>

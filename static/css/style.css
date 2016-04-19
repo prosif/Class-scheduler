@@ -19,7 +19,7 @@ button{
     left: 46%;
 }
 
-ul{
+ul.input{
 	width: 25%;
 	float: left;
 }
