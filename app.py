@@ -1,9 +1,11 @@
-from flask import Flask, request, url_for, send_from_directory
+from flask import Flask, request, url_for, render_template
 from flask.ext.cors import CORS
 import random
 import json
 import glpk
+import sys
 from pprint import pprint
+import socket
 
 app = Flask(__name__)
 CORS(app)
@@ -11,7 +13,9 @@ CORS(app)
 
 @app.route('/', methods=['GET'])
 def root():
-    return app.send_static_file('index.html')
+    # get ip address from arg
+    ip = str(sys.argv[1])
+    return render_template('index.html', ip=ip)#app.send_static_file('index.html')
 
 
 @app.route('/data', methods=['GET'])
@@ -387,4 +391,9 @@ def generate():
     	return json.dumps(results);
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=80)
+    if len(sys.argv) < 2:
+        print "Error: Specify server IP as first arg. Eg. python app.py 127.0.0.1"
+        exit(1)
+    else:
+        ip = str(sys.argv[1])
+    app.run(host=ip, port=80)
