@@ -68,7 +68,7 @@ def generate():
 	print rooms
 
 	for time in json.loads(request.form['times']):
-		times.append(str(time['start_time']) + str(time['end_time']))		
+		times.append(str(time['start']) + str(time['end']))		
 	print times
 
 	teachersNumCoursesIn = json.loads(request.form['teachersNumCourses'])
@@ -351,15 +351,20 @@ def generate():
 			constraintName = room+"MustOccupyAtTime"+time
 			defineConstraint([room,time], constraintName, 1, 1)
 
-	#Solve the problem and print all the data
-	print
-	print "Errors: {}".format(lp.simplex())
-	print lp.status
-	print "Errors: {}".format(lp.integer())
-	print "Status: {}".format(lp.status)
-	print
+	try:
+        	#Solve the problem and print all the data
+		print
+		print "Errors: {}".format(lp.simplex())
+		print "Errors: {}".format(lp.integer())
+		print "Status: {}".format(lp.status)
+		print
 
-	#print "---OBJECTIVE DESIRABILITY VALUES---"
+	except:
+		print "FAILURE"
+		return "nofeas", 400
+
+	
+        #print "---OBJECTIVE DESIRABILITY VALUES---"
 	for te in teachers:
 		for c in courses:
 			for r in rooms:
