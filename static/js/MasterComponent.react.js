@@ -1,3 +1,5 @@
+import React from 'react';
+import $ from 'jquery';
 import RoomsTable from './RoomsTable.react.js';
 import ScheduleTable from './ScheduleTable.react.js';
 import TeacherCountTable from './TeacherCountTable.react.js';
@@ -22,7 +24,7 @@ var MasterComponent = React.createClass({
     componentDidMount: function(){
         $.ajax({
             type: 'GET',
-            url: 'http://192.168.56.101/data',
+            url: 'http://' + serverIP +'/data',
             success: function(response){
                 var parsed = JSON.parse(response);
                 this.setState({
@@ -138,7 +140,7 @@ var MasterComponent = React.createClass({
     updateData: function(cb){
         $.ajax({
             type: 'POST',
-            url: 'http://192.168.56.101/update',
+            url: 'http://' + serverIP +'/update',
             data: {
                 "classes": JSON.stringify(this.state.classes),
                 "teachers": JSON.stringify(this.state.teachers),
@@ -432,7 +434,7 @@ var MasterComponent = React.createClass({
 	*/
         $.ajax({
             type: 'POST',
-            url: 'http://192.168.56.101/generate',
+            url: 'http://' + serverIP + '/generate',
             data: {
                 "teachers": JSON.stringify(this.state.teachers), 
                 "classes": JSON.stringify(this.state.classes), 

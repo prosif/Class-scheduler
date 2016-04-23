@@ -1,4 +1,5 @@
 import EditBox from './EditBox.react.js';
+import React from 'react';
 
 var DataForm = React.createClass({
 	getInitialState: function(){

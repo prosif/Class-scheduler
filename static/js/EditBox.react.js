@@ -1,3 +1,5 @@
+import React from 'react';
+
 var EditBox = React.createClass({
 	getInitialState: function(){
 		return{

@@ -1,4 +1,5 @@
 import DataCell from './DataCell.react.js';
+import React from 'react';
 
 var TeacherTimeTable = React.createClass({
     getInitialState: function(){

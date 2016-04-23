@@ -1,3 +1,5 @@
+import React from 'react';
+
 var DataCell = React.createClass({
     getInitialState: function(){
         return ({
