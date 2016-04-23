@@ -84,7 +84,7 @@ var MasterComponent = React.createClass({
     onDeleteTime: function(text){
         var tempTimes = this.state.times;
         for(var x in tempTimes){
-            if(tempTimes[x].start_time + tempTimes[x].end_time == text){
+            if(tempTimes[x].start + tempTimes[x].end == text){
                 tempTimes.splice(x, 1);
             }
         }
@@ -168,7 +168,7 @@ var MasterComponent = React.createClass({
 
     onCreateTime: function(timeName){
         var tempTimes = this.state.times,
-            newTime = {start_time: timeName, end_time: timeName, days: ["Mon", "Tue", "Wed"]};
+            newTime = {start: timeName, end: timeName, days: ["Mon", "Tue", "Wed"]};
         tempTimes.push(newTime);
         
         this.setState({
@@ -361,11 +361,19 @@ var MasterComponent = React.createClass({
 
     onGenerateSuccess: function(response){
         this.setState({
+		error: null,
 		scheduleItems: response.results
 	});
 	//this.setState({
         //    completedSchedule: schedule
         //})
+    },
+
+    onGenerateFailure: function(){
+	this.setState({
+		error: "No solution available",
+		scheduleItems: null
+	});
     },
 
     onGenerate: function(){
@@ -432,7 +440,8 @@ var MasterComponent = React.createClass({
 	console.log("coursesXtimes:");
 	console.log(coursesXTimes);
 	*/
-        $.ajax({
+        try{
+	    $.ajax({
             type: 'POST',
             url: 'http://' + serverIP + '/generate',
             data: {
@@ -450,7 +459,8 @@ var MasterComponent = React.createClass({
             success: function(response){
                 this.onGenerateSuccess(JSON.parse(response));
             }.bind(this),
-        });
+            }.bind(this));
+	} catch(error){this.onGenerateFailure()};
 
     },
 
@@ -479,6 +489,9 @@ var MasterComponent = React.createClass({
 			return <li key={item.course + item.time}>{item.course} - {item.room} - {item.teacher} - {item.time}</li>
 		});
 		schedule = <ul>{listItems}</ul>;
+	}
+	else if(this.state.error){
+		schedule = "Error: No possible solutions";
 	}
         return (
             <div>

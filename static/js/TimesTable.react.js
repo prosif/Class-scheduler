@@ -12,26 +12,26 @@ var TimesTable = React.createClass({
 
 
     onTimeClick: function(_class, time){
-        var currentStatus = this.state.timeStatuses[time.start_time + time.end_time + _class.class],
+        var currentStatus = this.state.timeStatuses[time.start + time.end + _class.class],
             constraint;
         switch(currentStatus){
             case null:
                 currentStatus = "yes";
-                constraint = {time: time.start_time + time.end_time, _class: _class.class}
+                constraint = {time: time.start + time.end, _class: _class.class}
                 break;
             case "yes":
                 currentStatus = "no";
-                constraint = {time: time.start_time + time.end_time, _class: "not " + _class.class}
+                constraint = {time: time.start + time.end, _class: "not " + _class.class}
                 break;
             default:
                 currentStatus = null;
         }
 
         var temp = this.state.timeStatuses;
-        temp[time.start_time + time.end_time + _class.class] = currentStatus;
+        temp[time.start + time.end + _class.class] = currentStatus;
         this.setState({roomStatuses: temp});
 
-        this.props.onRemove(time.start_time + time.end_time, _class.class);
+        this.props.onRemove(time.start + time.end, _class.class);
 
         if(constraint){
             this.props.onCreate(constraint);
@@ -43,8 +43,8 @@ var TimesTable = React.createClass({
 
         this.props.times.map(function(time){
             this.props.classes.map(function(_class){
-                if(!(time.start_time + time.end_time + _class.class in temp)){
-                    temp[time.start_time + time.end_time + _class.class] = null;
+                if(!(time.start + time.end + _class.class in temp)){
+                    temp[time.start + time.end + _class.class] = null;
                 }
             }.bind(this));
         }.bind(this));
@@ -55,8 +55,8 @@ var TimesTable = React.createClass({
     render: function(){
         var timeHeaders = this.props.times.map(function(time){
             return (
-                <th scope="col" key={time.start_time + time.end_time}>
-                    {time.start_time}
+                <th scope="col" key={time.start + time.end}>
+                    {time.start}
                 </th>
             );
         });
@@ -69,7 +69,7 @@ var TimesTable = React.createClass({
                     this.onTimeClick(_class, time);
                 }.bind(this);
                 return (
-                    <DataCell status={this.state.timeStatuses[time.start_time + time.end_time + _class.class]} onClick={timeClick} key={_class.class + time.start_time + time.end_time} />
+                    <DataCell status={this.state.timeStatuses[time.start + time.end + _class.class]} onClick={timeClick} key={_class.class + time.start + time.end} />
                 );                        
             }.bind(this));
             return (

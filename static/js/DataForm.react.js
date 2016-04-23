@@ -105,7 +105,7 @@ var DataForm = React.createClass({
 		}.bind(this));
 
 		var timesList = this.props.times.map(function(time){
-			return <EditBox onDelete={this.onDeleteTime} onConfirm={this.onChangeTime} key={time.start_time + time.end_time} content={time.start_time + time.end_time} />;
+			return <EditBox onDelete={this.onDeleteTime} onConfirm={this.onChangeTime} key={time.start + time.end} content={time.start + "-" + time.end + time.days} />;
 		}.bind(this));
 
 		var roomsList = this.props.rooms.map(function(room){

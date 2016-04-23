@@ -11,26 +11,26 @@ var RoomTimeTable = React.createClass({
     },
 
     onTimeClick: function(room, time){
-        var currentStatus = this.state.roomStatuses[room.room + time.start_time + time.end_time],
+        var currentStatus = this.state.roomStatuses[room.room + time.start + time.end],
             constraint;
         switch(currentStatus){
             case null:
                 currentStatus = "yes";
-                constraint = {room: room.room, time: time.start_time + time.end_time}
+                constraint = {room: room.room, time: time.start + time.end}
                 break;
             case "yes":
                 currentStatus = "no";
-                constraint = {room: room.room, time: "not " + time.start_time + time.end_time}
+                constraint = {room: room.room, time: "not " + time.start + time.end}
                 break;
             default:
                 currentStatus = null;
         }
 
         var temp = this.state.roomStatuses;
-        temp[room.room + time.start_time + time.end_time] = currentStatus;
+        temp[room.room + time.start + time.end] = currentStatus;
         this.setState({roomStatuses: temp});
 
-        this.props.onRemove(room.room, time.start_time + time.end_time);
+        this.props.onRemove(room.room, time.start + time.end);
 
         if(constraint){
             this.props.onCreate(constraint);
@@ -42,8 +42,8 @@ var RoomTimeTable = React.createClass({
 
         this.props.times.map(function(time){
             this.props.rooms.map(function(room){
-                if(!(room.room + time.start_time + time.end_time in temp)){
-                    temp[room.room + time.start_time + time.end_time] = null;
+                if(!(room.room + time.start + time.end in temp)){
+                    temp[room.room + time.start + time.end] = null;
                 }
             }.bind(this));
         }.bind(this));
@@ -54,8 +54,8 @@ var RoomTimeTable = React.createClass({
     render: function(){
         var timeHeaders = this.props.times.map(function(time){
             return (
-                <th scope="col" key={time.start_time + time.end_time}>
-                    {time.start_time + time.end_time}
+                <th scope="col" key={time.start + time.end}>
+                    {time.start + time.end}
                 </th>
             );
         });
@@ -68,7 +68,7 @@ var RoomTimeTable = React.createClass({
                     this.onTimeClick(room, time);
                 }.bind(this);
                 return (
-                    <DataCell status={this.state.roomStatuses[room.room + time.start_time + time.end_time]} onClick={timeClick} key={room.room + time.start_time + time.end_time} />
+                    <DataCell status={this.state.roomStatuses[room.room + time.start + time.end]} onClick={timeClick} key={room.room + time.start + time.end} />
                 );                        
             }.bind(this));
             return (
