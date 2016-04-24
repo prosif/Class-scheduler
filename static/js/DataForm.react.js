@@ -68,7 +68,14 @@ var DataForm = React.createClass({
 		});
 	},
 
+	onEdit: function(){
+		this.setState({
+			changed: true
+		});
+	},
+
 	onCreateTeacher: function(){
+		this.onEdit();
 		this.props.onCreateTeacher(this.state.teacherAdd);
 		this.setState({
 			teacherAdd: ""
@@ -76,6 +83,7 @@ var DataForm = React.createClass({
 	},
 
 	onCreateRoom: function(){
+		this.onEdit();
 		this.props.onCreateRoom(this.state.roomAdd);
 		this.setState({
 			roomAdd: ""
@@ -83,6 +91,7 @@ var DataForm = React.createClass({
 	},
 
 	onCreateTime: function(time){
+		this.onEdit();
 		this.props.onCreateTime(time);
 		this.setState({
 			timeAdd: ""
@@ -90,6 +99,7 @@ var DataForm = React.createClass({
 	},
 
 	onCreateClass: function(){
+		this.onEdit();
 		this.props.onCreateClass(this.state.classAdd);
 		this.setState({
 			classAdd: ""
@@ -100,48 +110,93 @@ var DataForm = React.createClass({
 		this.props.onSaveChanges();
 	},
 
+	onShowClassAdd: function(){
+		this.setState({
+			showClassAdd: true
+		});
+	},
+
+	onShowRoomAdd: function(){
+		this.setState({
+			showRoomAdd: true
+		});
+	},
+
+	onShowTeacherAdd: function(){
+		this.setState({
+			showTeacherAdd: true
+		});
+	},
+
+	onShowTimeAdd: function(){
+		this.setState({
+			showTimeAdd: true
+		});
+	},
+
 	render: function(){
+		var saveChangesButton;
+		if(this.state.changed){
+			saveChangesButton = <div className="confirm-changes btn btn-success" onClick={this.onSaveChanges}>Save changes</div>;
+		}
 		var classesList = this.props.classes.map(function(_class){
-			return <EditBox onDelete={this.onDeleteClass} onConfirm={this.onChangeClass} key={_class.class} content={_class.class} />;
+			return <EditBox onEdit={this.onEdit} onDelete={this.onDeleteClass} onConfirm={this.onChangeClass} key={_class.class} content={_class.class} />;
 		}.bind(this));
 
 		var timesList = this.props.times.map(function(time){
-			return <TimeEditBox onDelete={this.onDeleteTime} onConfirm={this.onChangeTime} key={time.start + time.end} time={time} />;
+			return <TimeEditBox onEdit={this.onEdit} onDelete={this.onDeleteTime} onConfirm={this.onChangeTime} key={time.start + time.end} time={time} />;
 		}.bind(this));
 
 		var roomsList = this.props.rooms.map(function(room){
-			return <EditBox onDelete={this.onDeleteRoom} onConfirm={this.onChangeRoom} key={room.room} content={room.room} />;
+			return <EditBox onEdit={this.onEdit} onDelete={this.onDeleteRoom} onConfirm={this.onChangeRoom} key={room.room} content={room.room} />;
 		}.bind(this));
 
 		var teachersList = this.props.teachers.map(function(teacher){
-			return <EditBox onDelete={this.onDeleteTeacher} onConfirm={this.onChangeTeacher} key={teacher.name} content={teacher.name} />;
+			return <EditBox onEdit={this.onEdit} onDelete={this.onDeleteTeacher} onConfirm={this.onChangeTeacher} key={teacher.name} content={teacher.name} />;
 		}.bind(this));
 
+		var classAddContent = <li><input type="text" onChange={this.onClassAdd} value={this.state.classAdd}/><div className="btn btn-default" onClick={this.onCreateClass}>Add</div></li>;
+		if(!this.state.showClassAdd){
+			classAddContent = <li className="list-add" onClick={this.onShowClassAdd}>{"Add a class..."}</li>;
+		}
+		var roomAddContent = <li><input type="text" onChange={this.onRoomAdd} value={this.state.roomAdd}/><div className="btn btn-default" onClick={this.onCreateRoom}>Add</div></li>;
+		if(!this.state.showRoomAdd){
+			roomAddContent = <li className="list-add" onClick={this.onShowRoomAdd}>{"Add a room..."}</li>;
+		}
+
+		var teacherAddContent = <li><input type="text" onChange={this.onTeacherAdd} value={this.state.teacherAdd}/><div className="btn btn-default" onClick={this.onCreateTeacher}>Add</div></li>;
+		if(!this.state.showTeacherAdd){
+			teacherAddContent = <li onClick={this.onShowTeacherAdd}>{"Add a teacher..."}</li>;
+		}
+		var timeAddContent = <TimeEditBox onEdit={this.onEdit} add={true} onAdd={this.onCreateTime} time={{}}/>;
+		if(!this.state.showTimeAdd){
+			timeAddContent = <li onClick={this.onShowTimeAdd}>{"Add a time..."}</li>;
+		}
 		return (
 			<div>
 			<div id="data-lists">
 				<ul className="input">
 					<lh><strong>Classes</strong></lh>
 					{classesList}
-					<li><input type="text" onChange={this.onClassAdd} value={this.state.classAdd}/><span onClick={this.onCreateClass}>add</span></li>
+					{classAddContent}
 				</ul>
 				<ul className="input">
 					<lh><strong>Times</strong></lh>
 					{timesList}
-					<TimeEditBox add={true} onAdd={this.onCreateTime} time={{}}/>
+					{timeAddContent}
 				</ul>
 				<ul className="input">
 					<lh><strong>Rooms</strong></lh>
 					{roomsList}
-					<li><input type="text" onChange={this.onRoomAdd} value={this.state.roomAdd}/><span onClick={this.onCreateRoom}>add</span></li>
+					{roomAddContent}
 				</ul>
 				<ul className="input">
 					<lh><strong>Teachers</strong></lh>
 					{teachersList}
-					<li><input type="text" onChange={this.onTeacherAdd} value={this.state.teacherAdd}/><span onClick={this.onCreateTeacher}>add</span></li>
+					{teacherAddContent}
 				</ul>
 			</div>
-			<div className="confirm-changes btn btn-success" onClick={this.onSaveChanges}>Save changes</div>
+			{saveChangesButton}
 			</div>
 		);
 	}

@@ -35,6 +35,7 @@ var TimeEditBox = React.createClass({
 
 	onAdd: function(){
 		var daysArray = [], currentDays = this.state.days;
+		this.props.onEdit();
 		if(currentDays.M){
 			daysArray.push("M");
 		}
@@ -67,6 +68,7 @@ var TimeEditBox = React.createClass({
 
 	onConfirm: function(){
 		// Need to convert days object back into array. I did not think this through
+		this.props.onEdit();
 		var daysArray = [], currentDays = this.state.days;
 		if(currentDays.M){
 			daysArray.push("M");
@@ -106,6 +108,7 @@ var TimeEditBox = React.createClass({
 	},
 
 	onDelete: function(){
+		this.props.onEdit();
 		this.props.onDelete(this.props.time);
 	},
 
@@ -126,6 +129,7 @@ var TimeEditBox = React.createClass({
 		else{
 			buttons = (
 				<span>
+					<div className="btn btn-default" onClick={this.onCancel}>Cancel</div>					
 					<div className="btn btn-default" onClick={this.onDelete}>Delete</div>
 					<div className="btn btn-default" onClick={this.onConfirm}>Confirm </div>
 				</span>
@@ -145,7 +149,6 @@ var TimeEditBox = React.createClass({
 					Friday <input type="checkbox" name={"F"} value={"F"} checked={this.state.days.F} onChange={this.onCheck} /><br />
 					Saturday <input type="checkbox" name={"Sat"} value={"Sat"} checked={this.state.days.Sat} onChange={this.onCheck} /><br />
 					Sunday <input type="checkbox" name={"Sun"} value={"Sun"} checked={this.state.days.Sun} onChange={this.onCheck} /><br />
-					<div className="btn btn-default" onClick={this.onCancel}>Cancel</div>					
 					{buttons}
 				</li>
 			);

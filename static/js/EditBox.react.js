@@ -21,6 +21,7 @@ var EditBox = React.createClass({
 	},
 
 	onConfirm: function(){
+		this.props.onEdit();
 		this.props.onConfirm(this.props.content, this.state.content);
 		this.setState({
 			editing: false
@@ -35,6 +36,7 @@ var EditBox = React.createClass({
 	},
 
 	onDelete: function(){
+		this.props.onEdit();
 		this.props.onDelete(this.props.content);
 	},
 
