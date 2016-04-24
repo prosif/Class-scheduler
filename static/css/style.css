@@ -1,6 +1,39 @@
 table{
-    margin: 5%;
+    margin: 2%;
     clear: both;
+}
+
+.link:hover{
+    cursor: pointer;
+}
+
+#content{
+    margin: 2%;
+}
+
+li.edit:hover{
+    cursor: pointer;
+}
+
+.buttons{
+    height: 75px;
+}
+
+li.edit .glyphicon{
+    margin-left: 5%;
+}
+
+h4.toggle{
+    height: 35px;
+}
+
+h4.toggle:hover, .list-add:hover{
+    cursor: pointer;
+}
+
+#teacher-count-table input{
+    width: 30%;
+    margin-right: 5%;
 }
 
 td{
@@ -27,13 +60,22 @@ th[scope='row']{
 .confirm-changes{
     width: 200px;
     left: 10%;
+    height: 35px;
     position: absolute;
 }
 
 .reset-data{
     width: 200px;
     right: 10%;
+    height: 35px;
     position: absolute;
+}
+
+.confirm{
+    width: 200px;
+    left: 75%;
+    top: 40px;
+    position: relative;
 }
 
 .table-cell:hover{

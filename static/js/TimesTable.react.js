@@ -51,6 +51,18 @@ var TimesTable = React.createClass({
 
         this.setState({timeStatuses: temp});
     },
+  
+    onHover: function(){
+	this.setState({
+	    hover: true
+	});
+    },
+
+    offHover: function(){
+	this.setState({
+	    hover: false
+	});
+    },
 
     render: function(){
         var timeHeaders = this.props.times.map(function(time){
@@ -80,15 +92,33 @@ var TimesTable = React.createClass({
             );
         }.bind(this));
 
+	var content;
+	var glyphicon = <strong>{"+"}</strong>;
+	if(this.props.display){
+		glyphicon = <strong>{"-"}</strong>;
+		content = (
+		    <div>
+	                <table id="times-table">
+                            <thead>
+                                <tr>{timeHeaders}</tr>
+                            </thead>
+                            <tbody>
+                                {classHeaders}
+                            </tbody>
+                        </table>
+		    </div>	
+		);
+	}
+
+	if(!this.state.hover){
+	    glyphicon = null;
+	}
+
         return(
-            <table id="times-table">
-                <thead>
-                    <tr>{timeHeaders}</tr>
-                </thead>
-                <tbody>
-                    {classHeaders}
-                </tbody>
-            </table>
+            <div>
+          	<h4 className="toggle" onMouseOver={this.onHover} onMouseOut={this.offHover} onClick={this.props.onToggle}>Course - Time Constraints {glyphicon}</h4>
+		{content}
+	    </div>
         );
     }
 });

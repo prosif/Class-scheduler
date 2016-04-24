@@ -138,6 +138,18 @@ var DataForm = React.createClass({
 	},
 
 	onResetData: function(){
+		this.setState({
+			showResetConfirm: true
+		});	
+	},
+	
+	onCancelReset: function(){
+		this.setState({
+			showResetConfirm: false
+		});
+	},
+
+	onConfirmResetData: function(){
 	    $.ajax({
                 type: 'POST',
                 url: 'http://' + serverIP +'/reset',
@@ -146,10 +158,27 @@ var DataForm = React.createClass({
                 }.bind(this),
                 
             });
+
+	},
+
+	onHover: function(){
+		this.setState({
+			hover: true
+		});
+	},
+
+	offHover: function(){
+		this.setState({
+			hover: false
+		});
 	},
 
 	render: function(){
 		var saveChangesButton;
+		var confirmContent;
+		if(this.state.showResetConfirm){
+			confirmContent = <div className="confirm"><strong>Are you sure?</strong> <span className="link" onClick={this.onConfirmResetData}>Yes</span> <span className="link" onClick={this.onCancelReset}>No</span></div>;
+		}
 		if(this.state.changed){
 			saveChangesButton = <div className="confirm-changes btn btn-success" onClick={this.onSaveChanges}>Save changes</div>;
 		}
@@ -171,25 +200,27 @@ var DataForm = React.createClass({
 
 		var classAddContent = <li><input type="text" onChange={this.onClassAdd} value={this.state.classAdd}/><div className="btn btn-default" onClick={this.onCreateClass}>Add</div></li>;
 		if(!this.state.showClassAdd){
-			classAddContent = <li className="list-add" onClick={this.onShowClassAdd}>{"Add a class..."}</li>;
+			classAddContent = <li className="list-add" onClick={this.onShowClassAdd}><strong>{"Add a class..."}</strong></li>;
 		}
 		var roomAddContent = <li><input type="text" onChange={this.onRoomAdd} value={this.state.roomAdd}/><div className="btn btn-default" onClick={this.onCreateRoom}>Add</div></li>;
 		if(!this.state.showRoomAdd){
-			roomAddContent = <li className="list-add" onClick={this.onShowRoomAdd}>{"Add a room..."}</li>;
+			roomAddContent = <li className="list-add" onClick={this.onShowRoomAdd}><strong>{"Add a room..."}</strong></li>;
 		}
 
 		var teacherAddContent = <li><input type="text" onChange={this.onTeacherAdd} value={this.state.teacherAdd}/><div className="btn btn-default" onClick={this.onCreateTeacher}>Add</div></li>;
 		if(!this.state.showTeacherAdd){
-			teacherAddContent = <li onClick={this.onShowTeacherAdd}>{"Add a teacher..."}</li>;
+			teacherAddContent = <li className="list-add" onClick={this.onShowTeacherAdd}><strong>{"Add a teacher..."}</strong></li>;
 		}
 		var timeAddContent = <TimeEditBox onEdit={this.onEdit} add={true} onAdd={this.onCreateTime} time={{}}/>;
 		if(!this.state.showTimeAdd){
-			timeAddContent = <li onClick={this.onShowTimeAdd}>{"Add a time..."}</li>;
+			timeAddContent = <li className="list-add" onClick={this.onShowTimeAdd}><strong>{"Add a time..."}</strong></li>;
 		}
 
 		var data;
+		var glyphicon = <strong>{"+"}</strong>//<span className="glyphicon glyphicon-plus" />;
 
 		if(this.props.display){
+			glyphicon = <strong>{"-"}</strong>;
 			data = (
 				<div>
 				<div id="data-lists">
@@ -217,14 +248,19 @@ var DataForm = React.createClass({
 				<div className="buttons">
 				{saveChangesButton}
 				<div className="btn btn-danger reset-data" onClick={this.onResetData}>Reset all data</div>
+				{confirmContent}
 				</div>
 				</div>
 			);
 		}
 
+		if(!this.state.hover){
+			glyphicon = null;
+		}
+
 		return (
 			<div>
-				<h4 onClick={this.props.onToggle}>Data</h4>
+				<h4 onMouseOver={this.onHover} onMouseOut={this.offHover} className="toggle" onClick={this.props.onToggle}>Data {glyphicon}</h4>
 				{data}			
 			</div>
 		);

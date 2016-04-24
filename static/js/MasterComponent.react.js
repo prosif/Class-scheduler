@@ -120,11 +120,8 @@ var MasterComponent = React.createClass({
     }, 
 
     onToggleDataFormDisplay: function(){
-	console.log("Clicked!");
 	var tempDisplay = this.state.display;
-	console.log(tempDisplay);
 	tempDisplay['DataForm'] = !tempDisplay['DataForm'];
-	console.log(tempDisplay);
 	this.setState({
 		display: tempDisplay
 	});
@@ -235,7 +232,6 @@ var MasterComponent = React.createClass({
                 "times": JSON.stringify(this.state.times)
             },
             success: function(response){
-                console.log(response);
             }.bind(this),
             complete: function(response){
                 cb && cb();
@@ -513,19 +509,6 @@ var MasterComponent = React.createClass({
 		}
 	}
 
-	/*console.log("teachersNumCourses:");
-	console.log(teachersNumCourses);
-	console.log("teachersXCourses:");
-	console.log(teachersXCourses);
-	console.log("coursesXrooms:");
-	console.log(coursesXRooms);
-	console.log("teachersXtimes:");
-	console.log(teachersXTimes);
-	console.log("roomsXtimes:");
-	console.log(roomsXTimes);
-	console.log("coursesXtimes:");
-	console.log(coursesXTimes);
-	*/
         try{
 	    $.ajax({
             type: 'POST',
@@ -543,11 +526,9 @@ var MasterComponent = React.createClass({
 		"coursesXtimes": JSON.stringify(coursesXTimes)
             },
             success: function(response){
-		console.log(response);
                 this.onGenerateSuccess(JSON.parse(response));
             }.bind(this),
 	    error: function(error){
-		console.log(error);
 		this.onGenerateFailure();
 	    }.bind(this),
 	    });
@@ -657,7 +638,7 @@ var MasterComponent = React.createClass({
 		    />
                 </div>
                 <div>
-                    <button onClick={this.onGenerate} type="button" className="btn btn-primary">Generate Schedule</button>
+                    <button onClick={this.onGenerate} type="button" className="btn btn-success">Generate Schedule</button>
                 </div>
 		<div className="results">
                 {schedule}

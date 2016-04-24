@@ -120,6 +120,18 @@ var TimeEditBox = React.createClass({
 			days: tempDays
 		});
 	},
+	
+	showPencil: function(){
+		this.setState({
+			showPencil: true
+		});
+	},
+
+	hidePencil: function(){
+		this.setState({
+			showPencil: false
+		});
+	},
 
 	render: function(){
 		var buttons;
@@ -136,6 +148,13 @@ var TimeEditBox = React.createClass({
 			);
 
 		}
+	
+		var pencil;
+
+		if(this.state.showPencil){
+			pencil = <span className="glyphicon glyphicon-pencil" />;
+		}
+
 		if(this.state.editing || this.props.add){
 			return (
 				<li>
@@ -154,7 +173,7 @@ var TimeEditBox = React.createClass({
 			);
 		}
 		else{
-			return <li onClick={this.onClick}>{this.state.time.start + "-" + this.state.time.end + " " + this.state.time.days}</li>;
+			return <li className="edit" onMouseOver={this.showPencil} onMouseOut={this.hidePencil} onClick={this.onClick}>{this.state.time.start + "-" + this.state.time.end + " " + this.state.time.days}{pencil}</li>;
 		}
 	}
 });

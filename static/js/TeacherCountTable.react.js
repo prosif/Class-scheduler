@@ -10,12 +10,20 @@ var TeacherCountTable = React.createClass({
 
     handleChange: function(teacher, val){
 	this.props.onChange(teacher, val);
-        //var currentCounts = this.state.teacherCounts;
-        //currentCounts[teacher] = val;
-        //this.setState({
-        //    teacherCounts: currentCounts
-        //});
     },
+  
+    onHover: function(){
+	this.setState({
+	    hover: true
+	});
+    },
+
+    offHover: function(){
+	this.setState({
+	    hover: false
+	});
+    },
+
 
     render: function(){
         var rows = this.props.teachers.map(function(teacher){
@@ -27,16 +35,41 @@ var TeacherCountTable = React.createClass({
                     <td>{teacher.name}</td>
                     <td>
                         <input type="number" onChange={handleChange} value={this.state.teacherCounts[teacher.name]} />
-                    </td>
+                    courses
+ 	            </td>
                 </tr>
             );
         }.bind(this));
+
+        rows.unshift(
+		<tr key="empty">
+			<th>Teacher</th>
+			<th>Must teach at least</th>
+		</tr>
+	);
+
+	var content;
+	var glyphicon = <strong>{"+"}</strong>;
+	if(this.props.display){
+	    glyphicon = <strong>{"-"}</strong>;
+	    content = (
+                <table id="teacher-count-table">
+                    <tbody>
+                        {rows}
+                    </tbody>
+                </table>
+  	    );
+	}
+
+	if(!this.state.hover){
+		glyphicon = null;
+	}
+
         return (
-            <table id="teacher-count-table">
-                <tbody>
-                    {rows}
-                </tbody>
-            </table>
+	    <div>
+	        <h4 className="toggle" onMouseOver={this.onHover} onMouseOut={this.offHover} onClick={this.props.onToggle}>Teacher Course Count Constraints {glyphicon}</h4>
+		{content}
+	    </div>
         );
     }
 });

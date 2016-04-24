@@ -42,7 +42,23 @@ var EditBox = React.createClass({
 		this.props.onDelete(this.props.content);
 	},
 
+	showPencil: function(){
+		this.setState({
+			showPencil: true
+		});
+	},
+
+	hidePencil: function(){
+		this.setState({
+			showPencil: false
+		});
+	},
+	
 	render: function(){
+		var pencil;
+		if(this.state.showPencil){
+			pencil = <span className="glyphicon glyphicon-pencil" />;
+		}
 		if(this.state.editing){
 			return (
 				<li>
@@ -55,7 +71,7 @@ var EditBox = React.createClass({
 			);
 		}
 		else{
-			return <li onClick={this.onClick}>{this.state.content}</li>;
+			return <li className="edit" onMouseOver={this.showPencil} onMouseOut={this.hidePencil} onClick={this.onClick}>{this.state.content}{pencil}</li>;
 		}
 	}
 });

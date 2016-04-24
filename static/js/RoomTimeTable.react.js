@@ -52,6 +52,18 @@ var RoomTimeTable = React.createClass({
 
         this.setState({roomStatuses: temp});
     },
+  
+    onHover: function(){
+	this.setState({
+	    hover: true
+	});
+    },
+
+    offHover: function(){
+	this.setState({
+	    hover: false
+	});
+    },
 
     render: function(){
         var timeHeaders = this.props.times.map(function(time){
@@ -81,16 +93,32 @@ var RoomTimeTable = React.createClass({
             );
         }.bind(this));
 
+	var content;
+	var glyphicon = <strong>{"+"}</strong>;
+	if(this.props.display){
+	glyphicon = <strong>{"-"}</strong>;
+	content = (
+                <table id="room-time-table">
+                    <thead>
+                        <tr>{timeHeaders}</tr>
+                    </thead>
+                    <tbody>
+                        {roomHeaders}
+                    </tbody>
+                </table>
+	    );
+	}
+
+	if(!this.state.hover){
+		glyphicon = null;
+	}
+
         return(
-            <table id="room-time-table">
-                <thead>
-                    <tr>{timeHeaders}</tr>
-                </thead>
-                <tbody>
-                    {roomHeaders}
-                </tbody>
-            </table>
-        );
+	    <div>
+		<h4 className="toggle" onMouseOver={this.onHover} onMouseOut={this.offHover} onClick={this.props.onToggle}>Room - Time Constraints {glyphicon}</h4>
+		{content}
+	    </div>
+       );
     }
 });
 

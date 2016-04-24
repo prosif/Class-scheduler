@@ -52,6 +52,18 @@ var RoomsTable = React.createClass({
 
         this.setState({roomStatuses: temp});
     },
+    
+    onHover: function(){
+	this.setState({
+	    hover: true
+	});
+    },
+
+    offHover: function(){
+	this.setState({
+	    hover: false
+	});
+    },
 
     render: function(){
         var roomHeaders = this.props.rooms.map(function(room){
@@ -81,15 +93,34 @@ var RoomsTable = React.createClass({
             );
         }.bind(this));
 
+	var content;
+	var glyphicon = <strong>{"+"}</strong>;
+	if(this.props.display){
+	    glyphicon = <strong>{"-"}</strong>;
+	    content = (
+		<div>
+		<table id="rooms-table">
+                    <thead>
+                        <tr>{roomHeaders}</tr>
+                    </thead>
+                    <tbody>
+                        {classHeaders}
+                    </tbody>
+                </table>
+		</div>
+	    );
+	}
+	
+	if(!this.state.hover){
+	    glyphicon = null;
+	}
+	
         return(
-            <table id="rooms-table">
-                <thead>
-                    <tr>{roomHeaders}</tr>
-                </thead>
-                <tbody>
-                    {classHeaders}
-                </tbody>
-            </table>
+	    <div>
+		<h4 onMouseOver={this.onHover} onMouseOut={this.offHover} className="toggle" onClick={this.props.onToggle}>Course - Room Constraints {glyphicon}</h4>
+
+		{content}
+	    </div>
         );
     }
 });

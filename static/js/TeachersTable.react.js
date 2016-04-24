@@ -76,6 +76,18 @@ var TeachersTable = React.createClass({
         });
     },
 
+    onHover: function(){
+	this.setState({
+    	    hover: true
+	});
+    },
+
+    offHover: function(){
+	this.setState({
+	    hover: false
+	});
+    },
+
     render: function(){
 
         var teacherHeaders = this.props.teachers.map(function(teacher){
@@ -114,19 +126,39 @@ var TeachersTable = React.createClass({
         }.bind(this));
 
         teacherCountCells.unshift(<th scope="row" key="total">Total</th>);
+	
+	var content;
+	
+	var glyphicon = <strong>{"+"}</strong>;
+
+	if(this.props.display){
+		glyphicon = <strong>{"-"}</strong>
+		content = (
+			<div>
+			<table id="teachers-table">
+                		<thead>
+                    			<tr>{teacherHeaders}</tr>
+                		</thead>
+                		<tbody>
+                		    {classRows}
+                		    <tr>
+                        		{teacherCountCells}
+                    		    </tr>
+                		</tbody>
+            		</table>
+			</div>
+		);
+	}
+
+	if(!this.state.hover){
+	    glyphicon = null;
+	}
 
         return(
-            <table id="teachers-table">
-                <thead>
-                    <tr>{teacherHeaders}</tr>
-                </thead>
-                <tbody>
-                    {classRows}
-                    <tr>
-                        {teacherCountCells}
-                    </tr>
-                </tbody>
-            </table>
+		<div>
+		<h4 onMouseOver={this.onHover} onMouseOut={this.offHover} className = "toggle" onClick={this.props.onToggle}>Course - Teacher Constraints {glyphicon}</h4>
+		{content}
+		</div>
         );
     }
 });
