@@ -1,6 +1,7 @@
 import EditBox from './EditBox.react.js';
 import TimeEditBox from './TimeEditBox.react.js';
 import React from 'react';
+import $ from 'jquery';
 
 var DataForm = React.createClass({
 	getInitialState: function(){
@@ -134,6 +135,17 @@ var DataForm = React.createClass({
 		});
 	},
 
+	onResetData: function(){
+	    $.ajax({
+                type: 'POST',
+                url: 'http://' + serverIP +'/reset',
+                success: function(response){
+			window.location.reload();//this.props.onSaveChanges();
+                }.bind(this),
+                
+            });
+	},
+
 	render: function(){
 		var saveChangesButton;
 		if(this.state.changed){
@@ -196,7 +208,10 @@ var DataForm = React.createClass({
 					{teacherAddContent}
 				</ul>
 			</div>
+			<div className="buttons">
 			{saveChangesButton}
+			<div className="btn btn-danger reset-data" onClick={this.onResetData}>Reset all data</div>
+			</div>
 			</div>
 		);
 	}

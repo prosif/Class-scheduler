@@ -5,7 +5,7 @@ import json
 import glpk
 import sys
 from pprint import pprint
-import socket
+import shutil 
 
 app = Flask(__name__)
 CORS(app)
@@ -15,7 +15,7 @@ CORS(app)
 def root():
     # get ip address from arg
     ip = str(sys.argv[1])
-    return render_template('index.html', ip=ip)#app.send_static_file('index.html')
+    return render_template('index.html', ip=ip)
 
 
 @app.route('/data', methods=['GET'])
@@ -24,6 +24,21 @@ def data():
         data = json.load(f)
     return json.dumps(data)
 
+@app.route('/reset', methods=['POST'])
+def reset_data():
+	shutil.copyfile("data_example.json", "data.json")
+	#with open("data_example.json", 'r') as f:
+	#	data_stuff = json.load(f)
+	#	with open("data.json", 'w') as x:
+	#		json.dump(data_stuff, x)
+		#print data
+		#x.seek(0)
+		#data_string = str(json.dumps(data))
+		#print data_string
+		#x.("HEY")
+		#x.truncate()
+		#print "DID IT"
+	return "Cool"
 
 @app.route('/update', methods=['POST'])
 def update_data():
