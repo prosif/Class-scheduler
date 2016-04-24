@@ -27,17 +27,6 @@ def data():
 @app.route('/reset', methods=['POST'])
 def reset_data():
 	shutil.copyfile("data_example.json", "data.json")
-	#with open("data_example.json", 'r') as f:
-	#	data_stuff = json.load(f)
-	#	with open("data.json", 'w') as x:
-	#		json.dump(data_stuff, x)
-		#print data
-		#x.seek(0)
-		#data_string = str(json.dumps(data))
-		#print data_string
-		#x.("HEY")
-		#x.truncate()
-		#print "DID IT"
 	return "Cool"
 
 @app.route('/update', methods=['POST'])
@@ -72,29 +61,30 @@ def generate():
 	times = []
 	for name in json.loads(request.form['teachers']):
 		teachers.append(str(name['name']))
-	print teachers
+	#print teachers
 
 	for course in json.loads(request.form['classes']):
 		courses.append(str(course['class']))
-	print courses
+	#print courses
 
 	for room in json.loads(request.form['rooms']):
 		rooms.append(str(room['room']))
-	print rooms
+	#print rooms
 
 	for time in json.loads(request.form['times']):
-		times.append(str(time['start']) + str(time['end']))		
-	print times
+		days_string = " "
+		for day in time['days']:
+			days_string += str(day) + " "
+		times.append(str(time['start']) + '-' + str(time['end']) + days_string)
+	#print times
 
 	teachersNumCoursesIn = json.loads(request.form['teachersNumCourses'])
 	teachersNumCourses = {}
 	# convert from unicode to string
 	for teacher in teachersNumCoursesIn:
-		print str(teacher)
-		print teachersNumCoursesIn[teacher]
 		teachersNumCourses[str(teacher)] = teachersNumCoursesIn[teacher]
-	print "teachersNumCourses"
-	print teachersNumCourses
+	#print "teachersNumCourses"
+	#print teachersNumCourses
 	
 	teacher_constraints = {}
 	teacher_course_constraints = json.loads(request.form['teachersXcourses'])
@@ -119,8 +109,8 @@ def generate():
 				teacher_list.append(.5)
 		teachersXcourses.append(teacher_list)
 
-	print "teachersXcourses:"
-	print teachersXcourses
+	#print "teachersXcourses:"
+	#print teachersXcourses
 		
 	course_constraints = {}
 	course_room_constraints = json.loads(request.form['coursesXrooms'])
@@ -145,8 +135,8 @@ def generate():
 				course_list.append(.5)
 		coursesXrooms.append(course_list)
 	
-	print "coursesXrooms:"
-	print coursesXrooms		
+	#print "coursesXrooms:"
+	#print coursesXrooms		
 
 	teacher_constraints = {}
 	teacher_time_constraints = json.loads(request.form['teachersXtimes'])
@@ -171,8 +161,8 @@ def generate():
 				teacher_list.append(.5)
 		teachersXtimes.append(teacher_list)
 	
-	print "teachersXtimes:"
-	print teachersXtimes
+	#print "teachersXtimes:"
+	#print teachersXtimes
 	
 	room_constraints = {}
 	room_time_constraints = json.loads(request.form['roomsXtimes'])
@@ -197,8 +187,8 @@ def generate():
 				room_list.append(.5)
 		roomsXtimes.append(room_list)
 	
-	print "roomsXtimes:"
-	print roomsXtimes
+	#print "roomsXtimes:"
+	#print roomsXtimes
 
 	course_constraints = {}
 	course_time_constraints = json.loads(request.form['coursesXtimes'])
@@ -223,8 +213,8 @@ def generate():
 				course_list.append(.5)
 		coursesXtimes.append(course_list)
 	
-	print "courseXtimes:"
-	print coursesXtimes
+	#print "courseXtimes:"
+	#print coursesXtimes
 
 	coursesXtimes = 	[[ 0,  0, .5, .5],
 				 [ 0, .5,  0, .5],
@@ -248,7 +238,7 @@ def generate():
 	possibilities = [[teacher, course, room, time] for teacher in teachers for course in courses for room in rooms for time in times]
 	for [teacher, course, room, time] in possibilities:
 		cnew = lp.cols.add(1)
-		colName = teacher+'-'+course+'-'+room+'-'+time
+		colName = teacher+' - '+course+' - '+room+' - '+time
 		lp.cols[cnew].name = colName
 		lp.cols[colName].kind = bool
 		lp.cols[colName].bounds = 0, 1
@@ -384,7 +374,7 @@ def generate():
 		for c in courses:
 			for r in rooms:
 				for ti in times:
-					colName = te+'-'+c+'-'+r+'-'+ti
+					colName = te+' - '+c+' - '+r+' - '+ti
 					print colName, lp.obj[colName]
 	print
 
@@ -400,7 +390,7 @@ def generate():
 	results = {"results": []}
 	for c in lp.cols:
 		if c.primal!=0:
-			pieces = c.name.split("-")
+			pieces = c.name.split(" - ")
 			to_add = {"teacher": pieces[0], "course": pieces[1], "room": pieces[2], "time": pieces[3]} 
 			#to_add = "{} = {}".format(c.name, c.primal)
 			results['results'].append(to_add)
