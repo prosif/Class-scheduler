@@ -1,4 +1,5 @@
 import EditBox from './EditBox.react.js';
+import TimeEditBox from './TimeEditBox.react.js';
 import React from 'react';
 
 var DataForm = React.createClass({
@@ -39,8 +40,8 @@ var DataForm = React.createClass({
 		this.props.onDeleteRoom(text);
 	},
 
-	onDeleteTime: function(text){
-		this.props.onDeleteTime(text);
+	onDeleteTime: function(time){
+		this.props.onDeleteTime(time);
 	},
 
 	onTeacherAdd: function(e){
@@ -81,8 +82,8 @@ var DataForm = React.createClass({
 		});
 	},
 
-	onCreateTime: function(){
-		this.props.onCreateTime(this.state.timeAdd);
+	onCreateTime: function(time){
+		this.props.onCreateTime(time);
 		this.setState({
 			timeAdd: ""
 		});
@@ -105,7 +106,7 @@ var DataForm = React.createClass({
 		}.bind(this));
 
 		var timesList = this.props.times.map(function(time){
-			return <EditBox onDelete={this.onDeleteTime} onConfirm={this.onChangeTime} key={time.start + time.end} content={time.start + "-" + time.end + time.days} />;
+			return <TimeEditBox onDelete={this.onDeleteTime} onConfirm={this.onChangeTime} key={time.start + time.end} time={time} />;
 		}.bind(this));
 
 		var roomsList = this.props.rooms.map(function(room){
@@ -117,6 +118,7 @@ var DataForm = React.createClass({
 		}.bind(this));
 
 		return (
+			<div>
 			<div id="data-lists">
 				<ul className="input">
 					<lh><strong>Classes</strong></lh>
@@ -126,7 +128,7 @@ var DataForm = React.createClass({
 				<ul className="input">
 					<lh><strong>Times</strong></lh>
 					{timesList}
-					<li><input type="text" onChange={this.onTimeAdd} value={this.state.timeAdd}/><span onClick={this.onCreateTime}>add</span></li>
+					<TimeEditBox add={true} onAdd={this.onCreateTime} time={{}}/>
 				</ul>
 				<ul className="input">
 					<lh><strong>Rooms</strong></lh>
@@ -138,7 +140,8 @@ var DataForm = React.createClass({
 					{teachersList}
 					<li><input type="text" onChange={this.onTeacherAdd} value={this.state.teacherAdd}/><span onClick={this.onCreateTeacher}>add</span></li>
 				</ul>
-				<div onClick={this.onSaveChanges}>Save changes</div>
+			</div>
+			<div className="confirm-changes btn btn-success" onClick={this.onSaveChanges}>Save changes</div>
 			</div>
 		);
 	}

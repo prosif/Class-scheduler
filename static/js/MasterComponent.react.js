@@ -81,10 +81,10 @@ var MasterComponent = React.createClass({
         });
     },
 
-    onDeleteTime: function(text){
+    onDeleteTime: function(time){
         var tempTimes = this.state.times;
         for(var x in tempTimes){
-            if(tempTimes[x].start + tempTimes[x].end == text){
+            if(tempTimes[x].start == time.start && tempTimes[x].end == time.end && tempTimes[x].days == time.days){
                 tempTimes.splice(x, 1);
             }
         }
@@ -166,10 +166,9 @@ var MasterComponent = React.createClass({
         });
     },
 
-    onCreateTime: function(timeName){
-        var tempTimes = this.state.times,
-            newTime = {start: timeName, end: timeName, days: ["Mon", "Tue", "Wed"]};
-        tempTimes.push(newTime);
+    onCreateTime: function(time){
+        var tempTimes = this.state.times;
+        tempTimes.push(time);
         
         this.setState({
             times: tempTimes
@@ -188,11 +187,11 @@ var MasterComponent = React.createClass({
         });
     },
 
-    onChangeTime: function(oldText, newText){
+    onChangeTime: function(oldTime, newTime){
         var tempTimes = this.state.times;
         for(var x in tempTimes){
-            if(tempTimes[x].time == oldText){
-                tempTimes[x].time = newText;
+            if(tempTimes[x].start == oldTime.start && tempTimes[x].end == oldTime.end && tempTimes[x].days == oldTime.days){
+                tempTimes[x] = newTime;
             }
         }
         this.setState({
@@ -491,7 +490,7 @@ var MasterComponent = React.createClass({
 		schedule = <ul>{listItems}</ul>;
 	}
 	else if(this.state.error){
-		schedule = "Error: No possible solutions";
+		schedule = <h4 className="error">{"Error: No possible solutions"}</h4>;
 	}
         return (
             <div>
@@ -525,7 +524,9 @@ var MasterComponent = React.createClass({
                 <div>
                     <button onClick={this.onGenerate} type="button" className="btn btn-primary">Generate Schedule</button>
                 </div>
+		<div className="results">
                 {schedule}
+		</div>
             </div>
         );
     }

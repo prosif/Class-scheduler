@@ -42,7 +42,7 @@ var EditBox = React.createClass({
 		if(this.state.editing){
 			return (
 				<li>
-					<input type="text" value={this.state.content} onChange={this.onChange} />
+					<input type="text" value={this.state.content} onChange={this.onChange} /><br />
 					<div className="btn btn-default" onClick={this.onDelete}>Delete</div>
 					<div className="btn btn-default" onClick={this.onCancel}>Cancel</div>
 					<div className="btn btn-default" onClick={this.onConfirm}>Confirm </div>

@@ -56,7 +56,7 @@ var TimesTable = React.createClass({
         var timeHeaders = this.props.times.map(function(time){
             return (
                 <th scope="col" key={time.start + time.end}>
-                    {time.start}
+                    {time.start + " - " + time.end + " " + time.days}
                 </th>
             );
         });
