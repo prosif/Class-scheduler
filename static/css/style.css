@@ -25,7 +25,15 @@ th[scope='row']{
 }
 
 .confirm-changes{
-    width: 100%;
+    width: 200px;
+    left: 10%;
+    position: absolute;
+}
+
+.reset-data{
+    width: 200px;
+    right: 10%;
+    position: absolute;
 }
 
 .table-cell:hover{
