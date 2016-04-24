@@ -4,6 +4,8 @@ import React from 'react';
 import $ from 'jquery';
 
 var DataForm = React.createClass({
+        displayName: "DataForm",
+
 	getInitialState: function(){
 		return{
 			teacherAdd: "",
@@ -184,34 +186,46 @@ var DataForm = React.createClass({
 		if(!this.state.showTimeAdd){
 			timeAddContent = <li onClick={this.onShowTimeAdd}>{"Add a time..."}</li>;
 		}
+
+		var data;
+
+		if(this.props.display){
+			data = (
+				<div>
+				<div id="data-lists">
+					<ul className="input">
+						<lh><strong>Classes</strong></lh>
+						{classesList}
+						{classAddContent}
+					</ul>
+					<ul className="input">
+						<lh><strong>Times</strong></lh>
+						{timesList}
+						{timeAddContent}
+					</ul>
+					<ul className="input">
+						<lh><strong>Rooms</strong></lh>
+						{roomsList}
+						{roomAddContent}
+					</ul>
+					<ul className="input">
+						<lh><strong>Teachers</strong></lh>
+						{teachersList}
+						{teacherAddContent}
+					</ul>
+				</div>
+				<div className="buttons">
+				{saveChangesButton}
+				<div className="btn btn-danger reset-data" onClick={this.onResetData}>Reset all data</div>
+				</div>
+				</div>
+			);
+		}
+
 		return (
 			<div>
-			<div id="data-lists">
-				<ul className="input">
-					<lh><strong>Classes</strong></lh>
-					{classesList}
-					{classAddContent}
-				</ul>
-				<ul className="input">
-					<lh><strong>Times</strong></lh>
-					{timesList}
-					{timeAddContent}
-				</ul>
-				<ul className="input">
-					<lh><strong>Rooms</strong></lh>
-					{roomsList}
-					{roomAddContent}
-				</ul>
-				<ul className="input">
-					<lh><strong>Teachers</strong></lh>
-					{teachersList}
-					{teacherAddContent}
-				</ul>
-			</div>
-			<div className="buttons">
-			{saveChangesButton}
-			<div className="btn btn-danger reset-data" onClick={this.onResetData}>Reset all data</div>
-			</div>
+				<h4 onClick={this.props.onToggle}>Data</h4>
+				{data}			
 			</div>
 		);
 	}

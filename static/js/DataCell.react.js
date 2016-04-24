@@ -1,6 +1,8 @@
 import React from 'react';
 
 var DataCell = React.createClass({
+    displayName: "DataCell",
+
     getInitialState: function(){
         return ({
             status: this.props.status

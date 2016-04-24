@@ -10,6 +10,8 @@ import TimesTable from './TimesTable.react.js';
 import DataForm from './DataForm.react.js';
 
 var MasterComponent = React.createClass({
+    displayName: "MasterComponent",
+
     getInitialState: function(){
         return({
             teacherConstraints: {},
@@ -17,7 +19,17 @@ var MasterComponent = React.createClass({
             timeConstraints: {},
             teacherTimeConstraints: {},
             roomTimeConstraints: {},
-	    teacherCounts: null
+	    teacherCounts: null,
+	    display: {
+		'RoomsTable': false, 
+		'ScheduleTable': false, 
+		'TeacherCountTable': false, 
+		'TeacherTimeTable': false, 
+		'RoomTimeTable': false, 
+		'TeachersTable': false, 
+		'TimesTable': false, 
+		'DataForm': false
+	    }
         });
     },
 
@@ -44,6 +56,81 @@ var MasterComponent = React.createClass({
             }.bind(this),
         });
     },
+
+    onToggleTimesTableDisplay: function(){
+	var tempDisplay = this.state.display;
+	tempDisplay['TimesTable'] = !tempDisplay['TimesTable'];
+	this.setState({
+		display: tempDisplay
+	});
+    }, 
+
+    onToggleRoomsTableDisplay: function(){
+	var tempDisplay = this.state.display;
+	tempDisplay['RoomsTable'] = !tempDisplay['RoomsTable'];
+	this.setState({
+		display: tempDisplay
+	});
+
+    }, 
+
+    onToggleScheduleTable: function(){
+	var tempDisplay = this.state.display;
+	tempDisplay['ScheduleTable'] = !tempDisplay['ScheduleTable'];
+	this.setState({
+		display: tempDisplay
+	});
+
+    }, 
+ 
+    onToggleTeacherCountTableDisplay: function(){
+    	var tempDisplay = this.state.display;
+	tempDisplay['TeacherCountTable'] = !tempDisplay['TeacherCountTable'];
+	this.setState({
+		display: tempDisplay
+	});
+
+    }, 
+
+    onToggleTeacherTimeTableDisplay: function(){
+	var tempDisplay = this.state.display;
+	tempDisplay['TeacherTimeTable'] = !tempDisplay['TeacherTimeTable'];
+	this.setState({
+		display: tempDisplay
+	});
+
+    }, 
+
+    onToggleRoomTimeTableDisplay: function(){
+	var tempDisplay = this.state.display;
+	tempDisplay['RoomTimeTable'] = !tempDisplay['RoomTimeTable'];
+	this.setState({
+		display: tempDisplay
+	});
+
+    }, 
+
+    onToggleTeachersTableDisplay: function(){
+	var tempDisplay = this.state.display;
+	tempDisplay['TeachersTable'] = !tempDisplay['TeachersTable'];
+	this.setState({
+		display: tempDisplay
+	});
+
+    }, 
+
+    onToggleDataFormDisplay: function(){
+	console.log("Clicked!");
+	var tempDisplay = this.state.display;
+	console.log(tempDisplay);
+	tempDisplay['DataForm'] = !tempDisplay['DataForm'];
+	console.log(tempDisplay);
+	this.setState({
+		display: tempDisplay
+	});
+
+    },
+
 
     onChangeClass: function(oldText, newText){
         var tempClasses = this.state.classes;
@@ -456,10 +543,15 @@ var MasterComponent = React.createClass({
 		"coursesXtimes": JSON.stringify(coursesXTimes)
             },
             success: function(response){
+		console.log(response);
                 this.onGenerateSuccess(JSON.parse(response));
             }.bind(this),
-            }.bind(this));
-	} catch(error){this.onGenerateFailure()};
+	    error: function(error){
+		console.log(error);
+		this.onGenerateFailure();
+	    }.bind(this),
+	    });
+	} catch(error){console.log(error); this.onGenerateFailure()};
 
     },
 
@@ -496,6 +588,8 @@ var MasterComponent = React.createClass({
             <div>
                 <div>
                     <DataForm 
+			display={this.state.display.DataForm}
+			onToggle={this.onToggleDataFormDisplay} 
                         teachers={this.state.teachers} 
                         times={this.state.times} 
                         rooms={this.state.rooms} 
@@ -514,12 +608,53 @@ var MasterComponent = React.createClass({
                         onDeleteClass={this.onDeleteClass}
                         onSaveChanges={this.onSaveChanges}
                     />
-                    <TeachersTable onCreate={this.onCreateTeacherConstraint} onRemove={this.onRemoveTeacherConstraint} classes={this.state.classes} teachers={this.state.teachers} />
-                    <RoomsTable onCreate={this.onCreateRoomConstraint} onRemove={this.onRemoveRoomConstraint} classes={this.state.classes} rooms={this.state.rooms} />
-                    <TimesTable onCreate={this.onCreateTimeConstraint} onRemove={this.onRemoveTimeConstraint} classes={this.state.classes} times={this.state.times} />
-                    <TeacherTimeTable onCreate={this.onCreateTeacherTimeConstraint} onRemove={this.onRemoveTeacherTimeConstraint} teachers={this.state.teachers} times={this.state.times} />
-                    <RoomTimeTable onCreate={this.onCreateRoomTimeConstraint} onRemove={this.onRemoveRoomTimeConstraint} rooms={this.state.rooms} times={this.state.times} />
-                    <TeacherCountTable counts={this.state.teacherCounts} onChange={this.onTeacherCountChange} teachers={this.state.teachers} />
+                    <TeachersTable 
+			onToggle={this.onToggleTeachersTableDisplay} 
+			display={this.state.display.TeachersTable} 
+			onCreate={this.onCreateTeacherConstraint} 
+			onRemove={this.onRemoveTeacherConstraint} 
+			classes={this.state.classes} 
+			teachers={this.state.teachers} 
+		    />
+                    <RoomsTable 
+			onToggle={this.onToggleRoomsTableDisplay} 
+			display={this.state.display.RoomsTable} 
+			onCreate={this.onCreateRoomConstraint} 
+			onRemove={this.onRemoveRoomConstraint} 
+			classes={this.state.classes} 
+			rooms={this.state.rooms} 
+		    />
+                    <TimesTable 
+			onToggle={this.onToggleTimesTableDisplay} 
+			display={this.state.display.TimesTable}
+			onCreate={this.onCreateTimeConstraint} 
+			onRemove={this.onRemoveTimeConstraint} 
+			classes={this.state.classes} 
+			times={this.state.times} 
+		    />
+                    <TeacherTimeTable 
+			onToggle={this.onToggleTeacherTimeTableDisplay} 
+			display={this.state.display.TeacherTimeTable} 
+			onCreate={this.onCreateTeacherTimeConstraint} 
+			onRemove={this.onRemoveTeacherTimeConstraint} 
+			teachers={this.state.teachers} 
+			times={this.state.times} 
+		    />
+                    <RoomTimeTable 
+			onToggle={this.onToggleRoomTimeTableDisplay} 
+			display={this.state.display.RoomTimeTable} 
+			onCreate={this.onCreateRoomTimeConstraint} 
+			onRemove={this.onRemoveRoomTimeConstraint} 
+			rooms={this.state.rooms} 
+			times={this.state.times} 
+		    />
+                    <TeacherCountTable 
+			onToggle={this.onToggleTeacherCountTableDisplay} 
+			display={this.state.display.TeacherCountTable} 
+			counts={this.state.teacherCounts} 
+			onChange={this.onTeacherCountChange} 
+			teachers={this.state.teachers} 
+		    />
                 </div>
                 <div>
                     <button onClick={this.onGenerate} type="button" className="btn btn-primary">Generate Schedule</button>

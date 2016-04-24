@@ -1,6 +1,8 @@
 import React from 'react';
 
 var EditBox = React.createClass({
+        displayName: "EditBox",
+
 	getInitialState: function(){
 		return{
 			editing: false,

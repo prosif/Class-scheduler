@@ -2,6 +2,8 @@ import DataCell from './DataCell.react.js';
 import React from 'react';
 
 var RoomsTable = React.createClass({
+    displayName: "RoomsTable",
+
     getInitialState: function(){
         return({
             rooms: this.props.rooms,

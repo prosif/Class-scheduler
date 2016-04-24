@@ -1,6 +1,8 @@
 import React from 'react';
 
 var ScheduleTable = React.createClass({
+    displayName: "ScheduleTable",
+
     render: function(){                    
         var teacherHeaders = this.props.teachers.map(function(teacher){
             return (
