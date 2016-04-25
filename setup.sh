@@ -12,6 +12,7 @@ tar -xjvf gmp-6.1.0.tar.bz2;
 cd gmp-6.1.0;
 ./configure;
 sudo make install;
+cd ..;
 wget http://ftp.gnu.org/gnu/glpk/glpk-4.47.tar.gz;
 tar -xzvf glpk-4.47.tar.gz;
 cd glpk-4.47;
