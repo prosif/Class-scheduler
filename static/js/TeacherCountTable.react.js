@@ -44,7 +44,7 @@ var TeacherCountTable = React.createClass({
         rows.unshift(
 		<tr key="empty">
 			<th>Teacher</th>
-			<th>Must teach at least</th>
+			<th>Must teach no more than</th>
 		</tr>
 	);
 
