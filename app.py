@@ -213,15 +213,6 @@ def generate():
 				course_list.append(.5)
 		coursesXtimes.append(course_list)
 	
-	print "W H A T"
-	#print "courseXtimes:"
-	#print coursesXtimes
-
-	#coursesXtimes = 	[[ 0,  0, .5, .5],
-	#			 [ 0, .5,  0, .5],
-#				 [.5, .5, .5, .5],
-#				 [.5, .5,  0, .5]]
-#
 	lp = glpk.LPX()
 	lp.obj.maximize = True
 
