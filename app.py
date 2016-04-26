@@ -26,7 +26,7 @@ def data():
 
 @app.route('/reset', methods=['POST'])
 def reset_data():
-	shutil.copyfile("data_example.json", "data.json")
+	shutil.copyfile("data_empty.json", "data.json")
 	return "Cool"
 
 @app.route('/update', methods=['POST'])
