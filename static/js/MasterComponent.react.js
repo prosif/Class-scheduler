@@ -39,6 +39,7 @@ var MasterComponent = React.createClass({
             url: 'http://' + serverIP +'/data',
             success: function(response){
                 var parsed = JSON.parse(response);
+		parsed.rooms.push({"room": "Other"});
                 this.setState({
                     teachers: parsed.teachers,
                     classes: parsed.classes,
