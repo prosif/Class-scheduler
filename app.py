@@ -241,7 +241,7 @@ def generate():
 	for t in teachers:
 		constraintName = t+"Numcourses"
 		numClasses = teachersNumCourses[t]
-		defineConstraint([t], constraintName, numClasses, numClasses + len(courses))
+		defineConstraint([t], constraintName, 0, numClasses)
 
 	#Each class can only be taught once
 	for c in courses:
