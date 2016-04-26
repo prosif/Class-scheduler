@@ -213,14 +213,15 @@ def generate():
 				course_list.append(.5)
 		coursesXtimes.append(course_list)
 	
+	print "W H A T"
 	#print "courseXtimes:"
 	#print coursesXtimes
 
-	coursesXtimes = 	[[ 0,  0, .5, .5],
-				 [ 0, .5,  0, .5],
-				 [.5, .5, .5, .5],
-				 [.5, .5,  0, .5]]
-
+	#coursesXtimes = 	[[ 0,  0, .5, .5],
+	#			 [ 0, .5,  0, .5],
+#				 [.5, .5, .5, .5],
+#				 [.5, .5,  0, .5]]
+#
 	lp = glpk.LPX()
 	lp.obj.maximize = True
 
@@ -249,7 +250,7 @@ def generate():
 	for t in teachers:
 		constraintName = t+"Numcourses"
 		numClasses = teachersNumCourses[t]
-		defineConstraint([t], constraintName, numClasses, numClasses)
+		defineConstraint([t], constraintName, numClasses, numClasses + len(courses))
 
 	#Each class can only be taught once
 	for c in courses:
