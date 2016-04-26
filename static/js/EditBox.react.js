@@ -11,9 +11,11 @@ var EditBox = React.createClass({
 	},
 
 	onClick: function(){
-		this.setState({
-			editing: !this.state.editing
-		});
+		if(this.state.content != "Other"){
+			this.setState({
+				editing: !this.state.editing
+			});
+		}
 	},
 
 	onChange: function(e){
@@ -43,9 +45,11 @@ var EditBox = React.createClass({
 	},
 
 	showPencil: function(){
-		this.setState({
-			showPencil: true
-		});
+		if(this.state.content != "Other"){
+			this.setState({
+				showPencil: true
+			});
+		}
 	},
 
 	hidePencil: function(){
