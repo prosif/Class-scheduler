@@ -78,34 +78,109 @@ var DataForm = React.createClass({
 	},
 
 	onCreateTeacher: function(){
-		this.onEdit();
-		this.props.onCreateTeacher(this.state.teacherAdd);
+		if(this.props.onCreateTeacher(this.state.teacherAdd)){
+			this.onEdit();
+			this.setState({
+				teacherAdd: ""
+			});
+		}
+		else{
+			this.setState({
+				teacherDupeText: <span className="text-danger">{this.state.teacherAdd + " already exists"}</span>
+			});
+			setTimeout(function(){
+				this.setState({
+					teacherDupeText: null
+				});
+			}.bind(this), 3000);
+		}
+	},
+
+	onCancelCreateTeacher: function(){
 		this.setState({
-			teacherAdd: ""
+			teacherAdd: "",
+			showTeacherAdd: false
 		});
 	},
 
+
 	onCreateRoom: function(){
-		this.onEdit();
-		this.props.onCreateRoom(this.state.roomAdd);
+		if(this.props.onCreateRoom(this.state.roomAdd)){
+			this.onEdit();
+			this.setState({
+				roomAdd: ""
+			});
+		}
+		else{
+			this.setState({
+				roomDupeText: <span className="text-danger">{this.state.roomAdd + " already exists"}</span>
+			});
+			setTimeout(function(){
+				this.setState({
+					roomDupeText: null
+				});
+			}.bind(this), 3000);
+		}
+	},
+
+	onCancelCreateRoom: function(){
 		this.setState({
-			roomAdd: ""
+			roomAdd: "",
+			showRoomAdd: false
 		});
 	},
 
 	onCreateTime: function(time){
-		this.onEdit();
-		this.props.onCreateTime(time);
+		if(this.props.onCreateTime(time)){
+			this.onEdit();
+			this.setState({
+				timeAdd: ""
+			});
+			return true;
+		}
+		else{
+			this.setState({
+				timeDupeText: <span className="text-danger">{"Time already exists"}</span>
+			});
+			setTimeout(function(){
+				this.setState({
+					timeDupeText: null
+				});
+			}.bind(this), 3000);
+			return false;
+		}
+	},
+	
+	onCancelCreateTime: function(){
 		this.setState({
-			timeAdd: ""
+			showTimeAdd: false
 		});
 	},
 
 	onCreateClass: function(){
-		this.onEdit();
-		this.props.onCreateClass(this.state.classAdd);
+		if(this.props.onCreateClass(this.state.classAdd)){
+			this.onEdit();
+			this.setState({
+				classAdd: ""
+			});
+		}
+
+		else{
+			this.setState({
+				classDupeText: <span className="text-danger">{"Class " + this.state.classAdd + " already exists"}</span>
+			});
+			setTimeout(function(){
+				this.setState({
+					classDupeText: null
+				});
+			}.bind(this), 3000);
+		}
+	},
+
+	onCancelCreateClass: function(){
 		this.setState({
-			classAdd: ""
+			classAdd: "",
+			showClassAdd: false
 		});
 	},
 
@@ -198,20 +273,20 @@ var DataForm = React.createClass({
 			return <EditBox onEdit={this.onEdit} onDelete={this.onDeleteTeacher} onConfirm={this.onChangeTeacher} key={teacher.name} content={teacher.name} />;
 		}.bind(this));
 
-		var classAddContent = <li><input type="text" onChange={this.onClassAdd} value={this.state.classAdd}/><div className="btn btn-default" onClick={this.onCreateClass}>Add</div></li>;
+		var classAddContent = <li><input type="text" onChange={this.onClassAdd} value={this.state.classAdd}/><br /><div className="btn btn-default" onClick={this.onCreateClass}>Add</div><div className="btn btn-default" onClick={this.onCancelCreateClass}>Cancel</div><br />{this.state.classDupeText}</li>;
 		if(!this.state.showClassAdd){
 			classAddContent = <li className="list-add" onClick={this.onShowClassAdd}><strong>{"Add a class..."}</strong></li>;
 		}
-		var roomAddContent = <li><input type="text" onChange={this.onRoomAdd} value={this.state.roomAdd}/><div className="btn btn-default" onClick={this.onCreateRoom}>Add</div></li>;
+		var roomAddContent = <li><input type="text" onChange={this.onRoomAdd} value={this.state.roomAdd}/><br /><div className="btn btn-default" onClick={this.onCreateRoom}>Add</div><div className="btn btn-default" onClick={this.onCancelCreateRoom}>Cancel</div><br />{this.state.roomDupeText}</li>;
 		if(!this.state.showRoomAdd){
 			roomAddContent = <li className="list-add" onClick={this.onShowRoomAdd}><strong>{"Add a room..."}</strong></li>;
 		}
 
-		var teacherAddContent = <li><input type="text" onChange={this.onTeacherAdd} value={this.state.teacherAdd}/><div className="btn btn-default" onClick={this.onCreateTeacher}>Add</div></li>;
+		var teacherAddContent = <li><input type="text" onChange={this.onTeacherAdd} value={this.state.teacherAdd}/><br /><div className="btn btn-default" onClick={this.onCreateTeacher}>Add</div><div className="btn btn-default" onClick={this.onCancelCreateTeacher}>Cancel</div><br />{this.state.teacherDupeText}</li>;
 		if(!this.state.showTeacherAdd){
 			teacherAddContent = <li className="list-add" onClick={this.onShowTeacherAdd}><strong>{"Add a teacher..."}</strong></li>;
 		}
-		var timeAddContent = <TimeEditBox onEdit={this.onEdit} add={true} onAdd={this.onCreateTime} time={{}}/>;
+		var timeAddContent = <TimeEditBox onEdit={this.onEdit} add={true} onCancel={this.onCancelCreateTime} onAdd={this.onCreateTime} dupeText={this.state.timeDupeText} time={{}}/>;
 		if(!this.state.showTimeAdd){
 			timeAddContent = <li className="list-add" onClick={this.onShowTimeAdd}><strong>{"Add a time..."}</strong></li>;
 		}

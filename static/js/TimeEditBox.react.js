@@ -35,7 +35,6 @@ var TimeEditBox = React.createClass({
 
 	onAdd: function(){
 		var daysArray = [], currentDays = this.state.days;
-		this.props.onEdit();
 		if(currentDays.M){
 			daysArray.push("M");
 		}
@@ -59,10 +58,24 @@ var TimeEditBox = React.createClass({
 		}
 
 		var newTime = {start: this.state.start, end: this.state.end, days: daysArray};
-		this.props.onAdd(newTime);
+		if(this.props.onAdd(newTime)){
+			this.props.onEdit();
+			this.setState({
+				editing: false,
+				time: newTime,
+				start: "",
+				end: "",
+				days: []
+			});
+		}
+	},
+
+	onCancelCreate: function(){
+		this.props.onCancel();
 		this.setState({
-			editing: false,
-			time: newTime
+			start: "",
+			end: "",
+			days: []
 		});
 	},
 
@@ -96,7 +109,7 @@ var TimeEditBox = React.createClass({
 		this.props.onConfirm(this.props.time, newTime);
 		this.setState({
 			editing: false,
-			time: newTime
+			time: newTime,
 		});
 	},
 
@@ -136,7 +149,12 @@ var TimeEditBox = React.createClass({
 	render: function(){
 		var buttons;
 		if(this.props.add){
-			buttons = <div className="btn btn-default" onClick={this.onAdd}>Add</div>;
+			buttons = (
+			<div>
+				<div className="btn btn-default" onClick={this.onAdd}>Add</div>
+				<div className="btn btn-default" onClick={this.onCancelCreate}>Cancel</div>
+			</div>
+		);
 		}
 		else{
 			buttons = (
@@ -158,8 +176,8 @@ var TimeEditBox = React.createClass({
 		if(this.state.editing || this.props.add){
 			return (
 				<li>
-					Start time: <input type="text" value={this.state.start} onChange={this.onStartChange} /><br />
-					End time :<input type="text" value={this.state.end} onChange={this.onEndChange} /><br />
+					Start time: (xxxx) <input type="number" value={this.state.start} onChange={this.onStartChange} /><br />
+					End time: (xxxx) <input type="number" value={this.state.end} onChange={this.onEndChange} /><br />
 					Days:<br />
 					Monday <input type="checkbox" name={"M"} value={"M"} checked={this.state.days.M} onChange={this.onCheck} /><br />
 					Tuesday <input type="checkbox" name={"T"} value={"T"} checked={this.state.days.T} onChange={this.onCheck} /><br />
@@ -169,6 +187,8 @@ var TimeEditBox = React.createClass({
 					Saturday <input type="checkbox" name={"Sat"} value={"Sat"} checked={this.state.days.Sat} onChange={this.onCheck} /><br />
 					Sunday <input type="checkbox" name={"Sun"} value={"Sun"} checked={this.state.days.Sun} onChange={this.onCheck} /><br />
 					{buttons}
+					<br />
+					{this.props.dupeText}
 				</li>
 			);
 		}
