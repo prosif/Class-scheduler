@@ -204,21 +204,39 @@ var MasterComponent = React.createClass({
     onCreateTeacher: function(teacherName){
         var tempTeachers = this.state.teachers,
             newTeacher = {name: teacherName};
+	
+	for(var x = 0; x < tempTeachers.length; x++){
+		if(tempTeachers[x].name == teacherName){
+			return false;
+		}
+	}
+
         tempTeachers.push(newTeacher);
         
         this.setState({
             teachers: tempTeachers
         });
+
+	return true;
     },
 
     onCreateRoom: function(roomName){
         var tempRooms = this.state.rooms,
             newRoom = {room: roomName};
+    	
+	for(var x = 0; x < tempRooms.length; x++){
+		if(tempRooms[x].room == roomName){
+			return false;
+		}
+	}
+
         tempRooms.push(newRoom);
         
         this.setState({
             rooms: tempRooms
         });
+
+	return true;
     },
 
     updateData: function(cb){
@@ -242,20 +260,45 @@ var MasterComponent = React.createClass({
     onCreateClass: function(className){
         var tempClasses = this.state.classes,
             newClass = {class: className};
+
+	for(var x = 0; x < tempClasses.length; x++){
+		if(tempClasses[x].class == className){
+			return false;
+		}
+	}
+
         tempClasses.push(newClass);
         
         this.setState({
             classes: tempClasses
         });
+
+	return true;
     },
 
+    // This is disgusting and I apologize if you're reading this but I'm in too deep and this is due soon
     onCreateTime: function(time){
         var tempTimes = this.state.times;
-        tempTimes.push(time);
-        
-        this.setState({
-            times: tempTimes
-        });
+        var shouldContinue = true;
+	for(var x = 0; x < tempTimes.length; x++){
+		if(tempTimes[x].start == time.start && tempTimes[x].end == time.end){
+			shouldContinue = false;
+			for(var y = 0; y < tempTimes[x].days.length; y++){
+				if(time.days.indexOf(tempTimes[x].days[y]) == -1){
+					shouldContinue = true;
+				}
+			}
+		}
+	}
+	if(shouldContinue){
+        	tempTimes.push(time);
+        	
+        	this.setState({
+            		times: tempTimes
+        	});
+		return true;
+	}
+	return false;
     },
 
     onChangeRoom: function(oldText, newText){
