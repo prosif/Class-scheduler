@@ -43,6 +43,8 @@ var TeachersTable = React.createClass({
             classCounts: newClassCount
         });
 
+	this.props.updateTeacherCounts(newTeacherCount);
+
         this.props.onRemove(teacher.name, _class.class);
 
         if(constraint){

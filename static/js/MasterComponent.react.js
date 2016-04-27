@@ -58,6 +58,10 @@ var MasterComponent = React.createClass({
         });
     },
 
+    updateTeacherCounts: function(newCounts){
+	this.setState({teacherCounts: newCounts});
+    },
+
     onToggleTimesTableDisplay: function(){
 	var tempDisplay = this.state.display;
 	tempDisplay['TimesTable'] = !tempDisplay['TimesTable'];
@@ -641,6 +645,7 @@ var MasterComponent = React.createClass({
                     />
                     <TeachersTable 
 			onToggle={this.onToggleTeachersTableDisplay} 
+			updateTeacherCounts={this.updateTeacherCounts}
 			display={this.state.display.TeachersTable} 
 			onCreate={this.onCreateTeacherConstraint} 
 			onRemove={this.onRemoveTeacherConstraint} 

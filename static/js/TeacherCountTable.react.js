@@ -26,6 +26,7 @@ var TeacherCountTable = React.createClass({
 
 
     render: function(){
+	if(!this.props.counts){return <div>Loading...</div>;}
         var rows = this.props.teachers.map(function(teacher){
             var handleChange = function(e){
                 this.handleChange(teacher.name, e.target.value)
@@ -34,7 +35,7 @@ var TeacherCountTable = React.createClass({
                 <tr key={teacher.name}>
                     <td>{teacher.name}</td>
                     <td>
-                        <input type="number" onChange={handleChange} value={this.state.teacherCounts[teacher.name]} />
+                        <input type="number" onChange={handleChange} value={this.props.counts[teacher.name]} />
                     courses
  	            </td>
                 </tr>
