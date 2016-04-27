@@ -72,6 +72,7 @@ def generate():
 	#print rooms
 
 	for time in json.loads(request.form['times']):
+		print time
 		days_string = " "
 		for day in time['days']:
 			days_string += str(day) + " "
@@ -223,8 +224,8 @@ def generate():
 		for col in lp.cols:
 			if all(subject in col.name for subject in subjects):
 				constraint.insert(0, (col.name, 1))
-		lp.rows[constraintName].matrix = constraint
-		lp.rows[constraintName].bounds = lowerbound, upperbound
+		lp.rows[name].matrix = constraint
+		lp.rows[name].bounds = lowerbound, upperbound
 
 	#####Define columns (variables)#####
 	possibilities = [[teacher, course, room, time] for teacher in teachers for course in courses for room in rooms for time in times]
@@ -348,6 +349,98 @@ def generate():
 			constraintName = room+"MustOccupyAtTime"+time
 			defineConstraint([room,time], constraintName, 1, 1)
 
+	#Determine overlapping times
+	def whoOverlap(dayList):
+		conflicts = []
+	    # Cover every possible combination of classes
+	    # Mr International
+		for i in range(len(dayList)):
+			for j in range(i+1, len(dayList)):
+				x = dayList[i]
+				y = dayList[j]
+	    
+	    		# DALE
+				if (x['end']>=y['start'] and x['start']<=y['start']):
+					conflicts.append((x,y))
+		return conflicts
+
+	# Store times according to day for day by day analysis, this is for taking care of the special section times
+	# or the Monday Wednesday class situations.
+	mTimes = []
+	tTimes = []
+	wTimes = []
+	thTimes = []
+	fTimes = []
+
+	# Adding the times to the respective day lists
+	# If this takes too much memory feel free to yell at me
+	jsonTimes = json.loads(request.form['times'])
+	for classTime in jsonTimes:
+	    if "M" in classTime['days']:
+		mTimes.append(classTime)
+	    if "T" in classTime['days']:
+		tTimes.append(classTime)
+	    if "W" in classTime['days']:
+		wTimes.append(classTime)
+	    if "TH" in classTime['days']:
+		thTimes.append(classTime)
+	    if "F" in classTime['days']:
+		fTimes.append(classTime)
+
+	# Now I'm sorting each of the day lists by their start times so I can easily compare when
+	# an overlap is happening. If you don't like that then sorry you big silly billy
+	mTimes = sorted(mTimes, key=lambda k: k['start'])
+	tTimes = sorted(tTimes, key=lambda k: k['start']) 
+	wTimes = sorted(wTimes, key=lambda k: k['start']) 
+	thTimes = sorted(thTimes, key=lambda k: k['start']) 
+	fTimes = sorted(fTimes, key=lambda k: k['start']) 
+
+	# Who tf overlappin out here???
+	mOverlaps = whoOverlap(mTimes)
+	tOverlaps = whoOverlap(tTimes)
+	wOverlaps = whoOverlap(wTimes)
+	thOverlaps = whoOverlap(thTimes)
+	fOverlaps = whoOverlap(fTimes)
+
+	# I'm just extending them not using some library that'll do this in one line
+	allOverlaps = []
+	allDays = [mOverlaps, tOverlaps, wOverlaps, thOverlaps, fOverlaps]
+	for dayList in allDays:
+		for ele in dayList:
+			if ele not in allOverlaps:
+				allOverlaps.append(ele)	
+	print allOverlaps
+	
+	def defineOverlapConstraint((teacher, times), name, lowerbound, upperbound):
+		constraint = []	
+		rnew = lp.rows.add(1)
+		lp.rows[rnew].name = name
+		for col in lp.cols:
+			if [i for i in times if i in col.name] and teacher in col.name:
+				print("here")
+				constraint.insert(0, (col.name, 1))
+		lp.rows[name].matrix = constraint
+		lp.rows[name].bounds = lowerbound, upperbound
+	
+	for (overlap1, overlap2) in allOverlaps:
+		laps=[overlap1,overlap2]
+		checkStrings = []
+		for overlap in laps:	
+			my_days_string = " "
+			for my_day in overlap['days']:
+				my_days_string += str(my_day) + " "
+			checkStrings.append(str(overlap['start']) + '-' + str(overlap['end']) + my_days_string)
+		print teachers	
+		#Teachers can only be occupied <=1 times per overlapping time	
+		for t in teachers:
+			subjects = (t, checkStrings)
+			print t+"OccupiedAtMostOnceDuringOverlap"+checkStrings[0]+"And"+checkStrings[1]
+			defineOverlapConstraint(subjects, t+"OccupiedAtMostOnceDuringOverlap"+checkStrings[0]+"And"+checkStrings[1], 0, 1)
+		#Rooms can only be occupied <=1 times per overlapping time
+		for r in rooms:
+			subjects = (r, checkStrings)
+			print r+"OccupiedAtMostOnceDuringOverlap"+checkStrings[0]+"And"+checkStrings[1]
+			defineOverlapConstraint(subjects, r+"OccupiedAtMostOnceDuringOverlap"+checkStrings[0]+"And"+checkStrings[1], 0, 1)
 	try:
         	#Solve the problem and print all the data
 		print
