@@ -29,7 +29,8 @@ var MasterComponent = React.createClass({
 		'TeachersTable': false, 
 		'TimesTable': false, 
 		'DataForm': false
-	    }
+	    },
+	    loading: false
         });
     },
 
@@ -553,6 +554,7 @@ var MasterComponent = React.createClass({
 	}
 
         try{
+	    this.setState({loading: true});
 	    $.ajax({
             type: 'POST',
             url: 'http://' + serverIP + '/generate',
@@ -569,9 +571,11 @@ var MasterComponent = React.createClass({
 		"coursesXtimes": JSON.stringify(coursesXTimes)
             },
             success: function(response){
+		this.setState({loading: false});
                 this.onGenerateSuccess(JSON.parse(response));
             }.bind(this),
 	    error: function(error){
+		this.setState({loading: false});
 		this.onGenerateFailure();
 	    }.bind(this),
 	    });
@@ -607,6 +611,9 @@ var MasterComponent = React.createClass({
 	}
 	else if(this.state.error){
 		schedule = <h4 className="error">{"Error: No possible solutions"}</h4>;
+	}
+	if(this.state.loading){
+		schedule = <h4>{"Loading..."}</h4>;
 	}
         return (
             <div>
