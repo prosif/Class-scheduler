@@ -74,8 +74,6 @@ def generate():
 			days_string += str(day) + ""
 		times.append(str(time['start']) + str(time['end']) + days_string)
 
-	print "Times"
-	print times
 	teachersNumCoursesIn = json.loads(request.form['teachersNumCourses'])
 	teachersNumCourses = {}
 	# convert from unicode to string
@@ -137,31 +135,20 @@ def generate():
 		for constraint in teacher_time_constraints[teacher]:
 			teacher_constraints[teacher].append(str(constraint))
 
-	print "Teacher constraints:"
-	print teacher_constraints
-	
 	teachersXtimes = []
 	for teacher in teachers:
 		teacher_list = []
 		for time in times:
 			if teacher in teacher_constraints:
-				print "COMPARING"
-				print time
-				print teacher_constraints[teacher]
 				if time in teacher_constraints[teacher]:
-					print "found match!"
 					teacher_list.append(1)
 				elif "not " + time in teacher_constraints[teacher]:
-					print "found not match!"
 					teacher_list.append(0)
 				else:
 					teacher_list.append(.5)
 			else:
 				teacher_list.append(.5)
 		teachersXtimes.append(teacher_list)
-	
-	#print "teachersXtimes:"
-	#print teachersXtimes
 	
 	room_constraints = {}
 	room_time_constraints = json.loads(request.form['roomsXtimes'])
@@ -186,9 +173,6 @@ def generate():
 				room_list.append(.5)
 		roomsXtimes.append(room_list)
 	
-	#print "roomsXtimes:"
-	#print roomsXtimes
-
 	course_constraints = {}
 	course_time_constraints = json.loads(request.form['coursesXtimes'])
 	for time in course_time_constraints:
@@ -407,7 +391,6 @@ def generate():
 		for ele in dayList:
 			if ele not in allOverlaps:
 				allOverlaps.append(ele)	
-	print allOverlaps
 	
 	def defineOverlapConstraint((teacher, times), name, lowerbound, upperbound):
 		constraint = []	
@@ -427,16 +410,13 @@ def generate():
 			for my_day in overlap['days']:
 				my_days_string += str(my_day) + " "
 			checkStrings.append(str(overlap['start']) + '-' + str(overlap['end']) + my_days_string)
-		print teachers	
 		#Teachers can only be occupied <=1 times per overlapping time	
 		for t in teachers:
 			subjects = (t, checkStrings)
-			print t+"OccupiedAtMostOnceDuringOverlap"+checkStrings[0]+"And"+checkStrings[1]
 			defineOverlapConstraint(subjects, t+"OccupiedAtMostOnceDuringOverlap"+checkStrings[0]+"And"+checkStrings[1], 0, 1)
 		#Rooms can only be occupied <=1 times per overlapping time
 		for r in rooms:
 			subjects = (r, checkStrings)
-			print r+"OccupiedAtMostOnceDuringOverlap"+checkStrings[0]+"And"+checkStrings[1]
 			defineOverlapConstraint(subjects, r+"OccupiedAtMostOnceDuringOverlap"+checkStrings[0]+"And"+checkStrings[1], 0, 1)
 	try:
         	#Solve the problem and print all the data
