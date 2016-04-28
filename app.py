@@ -61,31 +61,26 @@ def generate():
 	times = []
 	for name in json.loads(request.form['teachers']):
 		teachers.append(str(name['name']))
-	#print teachers
 
 	for course in json.loads(request.form['classes']):
 		courses.append(str(course['class']))
-	#print courses
 
 	for room in json.loads(request.form['rooms']):
 		rooms.append(str(room['room']))
-	#print rooms
 
 	for time in json.loads(request.form['times']):
-		print time
-		days_string = " "
+		days_string = ""
 		for day in time['days']:
-			days_string += str(day) + " "
-		times.append(str(time['start']) + '-' + str(time['end']) + days_string)
-	#print times
+			days_string += str(day) + ""
+		times.append(str(time['start']) + str(time['end']) + days_string)
 
+	print "Times"
+	print times
 	teachersNumCoursesIn = json.loads(request.form['teachersNumCourses'])
 	teachersNumCourses = {}
 	# convert from unicode to string
 	for teacher in teachersNumCoursesIn:
 		teachersNumCourses[str(teacher)] = teachersNumCoursesIn[teacher]
-	#print "teachersNumCourses"
-	#print teachersNumCourses
 	
 	teacher_constraints = {}
 	teacher_course_constraints = json.loads(request.form['teachersXcourses'])
@@ -110,9 +105,6 @@ def generate():
 				teacher_list.append(.5)
 		teachersXcourses.append(teacher_list)
 
-	#print "teachersXcourses:"
-	#print teachersXcourses
-		
 	course_constraints = {}
 	course_room_constraints = json.loads(request.form['coursesXrooms'])
 	for course in course_room_constraints:
@@ -136,8 +128,6 @@ def generate():
 				course_list.append(.5)
 		coursesXrooms.append(course_list)
 	
-	#print "coursesXrooms:"
-	#print coursesXrooms		
 
 	teacher_constraints = {}
 	teacher_time_constraints = json.loads(request.form['teachersXtimes'])
@@ -146,15 +136,23 @@ def generate():
 			teacher_constraints[str(teacher)] = []
 		for constraint in teacher_time_constraints[teacher]:
 			teacher_constraints[teacher].append(str(constraint))
+
+	print "Teacher constraints:"
+	print teacher_constraints
 	
 	teachersXtimes = []
 	for teacher in teachers:
 		teacher_list = []
 		for time in times:
 			if teacher in teacher_constraints:
+				print "COMPARING"
+				print time
+				print teacher_constraints[teacher]
 				if time in teacher_constraints[teacher]:
+					print "found match!"
 					teacher_list.append(1)
 				elif "not " + time in teacher_constraints[teacher]:
+					print "found not match!"
 					teacher_list.append(0)
 				else:
 					teacher_list.append(.5)
@@ -417,7 +415,6 @@ def generate():
 		lp.rows[rnew].name = name
 		for col in lp.cols:
 			if [i for i in times if i in col.name] and teacher in col.name:
-				print("here")
 				constraint.insert(0, (col.name, 1))
 		lp.rows[name].matrix = constraint
 		lp.rows[name].bounds = lowerbound, upperbound
