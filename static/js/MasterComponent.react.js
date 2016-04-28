@@ -609,7 +609,15 @@ var MasterComponent = React.createClass({
         }
 	if(this.state.scheduleItems){
 		var listItems = this.state.scheduleItems.map(function(item){
-			return <li key={item.course + item.time}>{item.course} - {item.room} - {item.teacher} - {item.time}</li>
+			// This is embarrassing and I'm mad at myself for doing it
+			var niceTime;
+			var firstHour = item.time.substring(0, 2);
+			var firstMins = item.time.substring(2, 4);
+			var secondHour = item.time.substring(4, 6);
+			var secondMins = item.time.substring(6, 8);
+			var days = item.time.substring(8, item.time.length);
+			niceTime = firstHour + ":" + firstMins + " - " + secondHour + ":" + secondMins + " " + days;
+			return <li key={item.course + item.time}>{item.course} - {item.room} - {item.teacher} - {niceTime}</li>
 		});
 		schedule = <ul>{listItems}</ul>;
 	}
