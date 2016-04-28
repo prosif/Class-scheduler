@@ -9,7 +9,18 @@ var DataCell = React.createClass({
         });
     },
 
+    renderOther: function(){
+	return (
+		<td className="table-cell" onClick={this.props.onClick}>
+			{content}
+		</td>
+	);
+    },
+
     render: function(){
+	if(this.props.other){
+		return this.renderOther();
+	}
         var content = "-";
         switch(this.props.status){
             case "yes":

@@ -74,6 +74,11 @@ def generate():
 			days_string += str(day) + ""
 		times.append(str(time['start']) + str(time['end']) + days_string)
 
+	# Add in "other" rooms from roomConstraints
+  	for room in json.loads(request.form['coursesXrooms']):
+		if room[0:5] == "other":
+			rooms.append(str(room))
+
 	teachersNumCoursesIn = json.loads(request.form['teachersNumCourses'])
 	teachersNumCourses = {}
 	# convert from unicode to string

@@ -41,6 +41,7 @@ var RoomsTable = React.createClass({
 
     componentDidMount: function(){
         var temp = {};
+	var others = {};
 
         this.props.rooms.map(function(room){
             this.props.classes.map(function(_class){
@@ -75,6 +76,7 @@ var RoomsTable = React.createClass({
         });
 
         roomHeaders.unshift(<th key="empty"></th>);
+	roomHeaders.push(<th scope="col" key="other">{"Other"}</th>);
 
         var classHeaders = this.props.classes.map(function(_class){
             var tableCells = this.props.rooms.map(function(room){
@@ -85,6 +87,45 @@ var RoomsTable = React.createClass({
                     <DataCell status={this.state.roomStatuses[room.room + _class.class]} onClick={roomClick} key={_class.class + room.room} class={_class} room={room} />
                 );                        
             }.bind(this));
+	    var otherClick = function(){
+        	var currentStatus = this.state.roomStatuses["other" + _class.class + _class.class],
+            	    constraint,
+		    newStatus;
+		switch(currentStatus){
+			case "yes":
+				newStatus = "no";
+                		constraint = {room: "other" + _class.class, _class: "not " + _class.class}
+				break;
+			case "no":
+				newStatus = null;
+				break;
+			default:
+				newStatus = "yes";
+                		constraint = {room: "other" + _class.class, _class: _class.class}
+				break;
+		}
+        	var temp = this.state.roomStatuses;
+        	temp["other" + _class.class + _class.class] = newStatus;
+        	this.setState({roomStatuses: temp});
+
+        	this.props.onRemove("other" + _class.class, _class.class);
+
+        	if(constraint){
+        	    this.props.onCreate(constraint);
+        	}
+	    }.bind(this);
+	    var otherContent = "-";
+	    switch(this.state.roomStatuses["other" + _class.class + _class.class]){
+		case "yes":
+			otherContent = <span className="glyphicon glyphicon-ok" />;
+			break;
+		case "no":
+			otherContent = <span className="glyphicon glyphicon-remove" />;
+			break;
+		default:
+			otherContent = "-";
+	    }
+	    tableCells.push(<td className="table-cell" onClick={otherClick} key={"other" + _class.class}>{otherContent}</td>);
             return (
                 <tr key={_class.class}>
                     <th scope="row">{_class.class}</th>

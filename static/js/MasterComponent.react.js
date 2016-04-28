@@ -610,14 +610,21 @@ var MasterComponent = React.createClass({
 	if(this.state.scheduleItems){
 		var listItems = this.state.scheduleItems.map(function(item){
 			// This is embarrassing and I'm mad at myself for doing it
-			var niceTime;
+			var niceTime, roomText;
 			var firstHour = item.time.substring(0, 2);
 			var firstMins = item.time.substring(2, 4);
 			var secondHour = item.time.substring(4, 6);
 			var secondMins = item.time.substring(6, 8);
 			var days = item.time.substring(8, item.time.length);
 			niceTime = firstHour + ":" + firstMins + " - " + secondHour + ":" + secondMins + " " + days;
-			return <li key={item.course + item.time}>{item.course} - {item.room} - {item.teacher} - {niceTime}</li>
+			// remove class info from "other" room variables, just show as "other"
+			if(item.room.substring(0, 5) == "other"){
+				roomText = "Other";
+			}
+			else{
+				roomText = item.room;
+			}
+			return <li key={item.course + item.time}>{item.course} - {roomText} - {item.teacher} - {niceTime}</li>
 		});
 		schedule = <ul>{listItems}</ul>;
 	}
