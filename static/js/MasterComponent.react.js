@@ -427,8 +427,6 @@ var MasterComponent = React.createClass({
     },
 
     onCreateTeacherTimeConstraint: function(constraint){
-	console.log("Creating");
-	console.log(constraint);
         var currentTeacherTimeConstraints = this.state.teacherTimeConstraints;
         if(!(constraint.teacher in currentTeacherTimeConstraints)){
             currentTeacherTimeConstraints[constraint.teacher] = [];
@@ -437,7 +435,6 @@ var MasterComponent = React.createClass({
         this.setState({
             teacherTimeConstraints: currentTeacherTimeConstraints
         });
-	console.log(this.state);
     },
 
     onRemoveTeacherTimeConstraint: function(teacher, time){

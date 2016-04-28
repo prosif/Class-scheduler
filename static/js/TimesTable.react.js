@@ -12,26 +12,31 @@ var TimesTable = React.createClass({
 
 
     onTimeClick: function(_class, time){
-        var currentStatus = this.state.timeStatuses[time.start + time.end + _class.class],
+	var daysString = "";
+	for(var x in time.days){
+		daysString += time.days[x];
+	}
+
+        var currentStatus = this.state.timeStatuses[time.start + time.end + daysString + _class.class],
             constraint;
         switch(currentStatus){
             case null:
                 currentStatus = "yes";
-                constraint = {time: time.start + time.end, _class: _class.class}
+                constraint = {time: time.start + time.end + daysString, _class: _class.class}
                 break;
             case "yes":
                 currentStatus = "no";
-                constraint = {time: time.start + time.end, _class: "not " + _class.class}
+                constraint = {time: time.start + time.end + daysString, _class: "not " + _class.class}
                 break;
             default:
                 currentStatus = null;
         }
 
         var temp = this.state.timeStatuses;
-        temp[time.start + time.end + _class.class] = currentStatus;
+        temp[time.start + time.end + daysString + _class.class] = currentStatus;
         this.setState({roomStatuses: temp});
 
-        this.props.onRemove(time.start + time.end, _class.class);
+        this.props.onRemove(time.start + time.end + daysString, _class.class);
 
         if(constraint){
             this.props.onCreate(constraint);
@@ -43,8 +48,13 @@ var TimesTable = React.createClass({
 
         this.props.times.map(function(time){
             this.props.classes.map(function(_class){
-                if(!(time.start + time.end + _class.class in temp)){
-                    temp[time.start + time.end + _class.class] = null;
+		var daysString = "";
+		for(var x in time.days){
+			daysString += time.days[x];
+		}
+
+                if(!(time.start + time.end + daysString + _class.class in temp)){
+                    temp[time.start + time.end + daysString + _class.class] = null;
                 }
             }.bind(this));
         }.bind(this));
@@ -80,8 +90,13 @@ var TimesTable = React.createClass({
                 var timeClick = function(){
                     this.onTimeClick(_class, time);
                 }.bind(this);
+		var daysString = "";
+		for(var x in time.days){
+			daysString += time.days[x];
+		}
+
                 return (
-                    <DataCell status={this.state.timeStatuses[time.start + time.end + _class.class]} onClick={timeClick} key={_class.class + time.start + time.end} />
+                    <DataCell status={this.state.timeStatuses[time.start + time.end + daysString + _class.class]} onClick={timeClick} key={_class.class + time.start + time.end + daysString} />
                 );                        
             }.bind(this));
             return (

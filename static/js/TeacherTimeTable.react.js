@@ -11,7 +11,6 @@ var TeacherTimeTable = React.createClass({
     },
 
     onTimeClick: function(teacher, time){
-	console.log("Clicked!");
 	var daysString = "";
 	for(var x in time.days){
 		daysString += time.days[x];
