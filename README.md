@@ -19,8 +19,8 @@ Backend Installation (Now works on 32 and 64 bit unix installations!):
     ./configure  
     sudo make install  
     
-  PyGLPK:  
-    Download latest version from:  
-    Unzip the tar file  
+  PyGLPK: 
+    Download latest version from: https://github.com/bradfordboyle/pyglpk  
+    Unzip the tar file  
     make  
     make install
