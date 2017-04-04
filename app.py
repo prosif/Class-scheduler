@@ -10,13 +10,30 @@ import shutil
 app = Flask(__name__)
 CORS(app)
 
+'''loads_byteified and _byteify were taken from http://stackoverflow.com/questions/956867/how-to-get-string-objects-instead-of-unicode-ones-from-json-in-python/13105359#13105359'''
+def loads_byteified(json_text):
+    return _byteify(
+        json.loads(json_text, object_hook=_byteify),
+        ignore_dicts=True
+    )
+
+def _byteify(data, ignore_dicts = False):
+    if isinstance(data, unicode):
+        return data.encode('utf-8')
+    if isinstance(data, list):
+        return [ _byteify(item, ignore_dicts=True) for item in data ]
+    if isinstance(data, dict) and not ignore_dicts:
+        return {
+            _byteify(key, ignore_dicts=True): _byteify(value, ignore_dicts=True)
+            for key, value in data.iteritems()
+        }
+    return data
 
 @app.route('/', methods=['GET'])
 def root():
     # get ip address from arg
     ip = str(sys.argv[1])
     return render_template('index.html', ip=ip)
-
 
 @app.route('/data', methods=['GET'])
 def data():
@@ -27,179 +44,39 @@ def data():
 @app.route('/reset', methods=['POST'])
 def reset_data():
 	shutil.copyfile("data_empty.json", "data.json")
-	return "Cool"
 
 @app.route('/update', methods=['POST'])
 def update_data():
     with open('data.json', 'r+') as data_file:
         current_data = json.load(data_file)
-        current_data['classes'] = json.loads(request.form['classes'])
-        current_data['rooms'] = json.loads(request.form['rooms'])
-        current_data['teachers'] = json.loads(request.form['teachers'])
-        current_data['times'] = json.loads(request.form['times'])
+	for constraint in ('classes', 'rooms', 'teachers', 'times'):
+        	current_data[constraint] = json.loads(request.form[constraint])
         data_file.seek(0)
         json.dump(current_data, data_file)
         data_file.truncate()
-    return "Cool"
-
 
 @app.route('/css/<filename>', methods=['GET'])
 def css(filename):
     return app.send_static_file('css/' + filename)
 
-
 @app.route('/js/<filename>', methods=['GET'])
 def js(filename):
     return app.send_static_file('js/' + filename)
 
-
 @app.route("/generate", methods=['POST'])
 def generate():
-	teachers = []
-	courses = []
-	rooms = []
+	teachers = [name['name'] 	 for name   in loads_byteified(request.form['teachers'])]
+	courses  = [course['class']      for course in loads_byteified(request.form['classes'])]
+	rooms 	 = [room['room'] 	 for room   in loads_byteified(request.form['rooms'])]
+	rooms 	+= [room 		 for room   in loads_byteified(request.form['coursesXrooms']) if (room[0:5] == 'other')]
 	times = []
-	for name in json.loads(request.form['teachers']):
-		teachers.append(str(name['name']))
-
-	for course in json.loads(request.form['classes']):
-		courses.append(str(course['class']))
-
-	for room in json.loads(request.form['rooms']):
-		rooms.append(str(room['room']))
-
 	for time in json.loads(request.form['times']):
 		days_string = ""
 		for day in time['days']:
 			days_string += str(day) + ""
 		times.append(str(time['start']) + str(time['end']) + days_string)
-
-	# Add in "other" rooms from roomConstraints
-  	for room in json.loads(request.form['coursesXrooms']):
-		if room[0:5] == "other":
-			rooms.append(str(room))
-
-	teachersNumCoursesIn = json.loads(request.form['teachersNumCourses'])
-	teachersNumCourses = {}
-	# convert from unicode to string
-	for teacher in teachersNumCoursesIn:
-		teachersNumCourses[str(teacher)] = teachersNumCoursesIn[teacher]
 	
-	teacher_constraints = {}
-	teacher_course_constraints = json.loads(request.form['teachersXcourses'])
-	for teacher in teacher_course_constraints:
-		if str(teacher) not in teacher_constraints:
-			teacher_constraints[str(teacher)] = []
-		for constraint in teacher_course_constraints[teacher]:
-			teacher_constraints[teacher].append(str(constraint))
-	
-	teachersXcourses = []
-	for teacher in teachers:
-		teacher_list = []
-		for course in courses:
-			if teacher in teacher_constraints:
-				if course in teacher_constraints[teacher]:
-					teacher_list.append(1)
-				elif "not " + course in teacher_constraints[teacher]:
-					teacher_list.append(0)
-				else:
-					teacher_list.append(.5)
-			else:
-				teacher_list.append(.5)
-		teachersXcourses.append(teacher_list)
-
-	course_constraints = {}
-	course_room_constraints = json.loads(request.form['coursesXrooms'])
-	for course in course_room_constraints:
-		if str(course) not in course_constraints:
-			course_constraints[str(course)] = []
-		for constraint in course_room_constraints[course]:
-			course_constraints[course].append(str(constraint))
-	
-	coursesXrooms = []
-	for course in courses:
-		course_list = []
-		for room in rooms:
-			if room in course_constraints:
-				if course in course_constraints[room]:
-					course_list.append(1)
-				elif "not " + course in course_constraints[room]:
-					course_list.append(0)
-				else:
-					course_list.append(.5)
-			else:
-				course_list.append(.5)
-		coursesXrooms.append(course_list)
-	
-
-	teacher_constraints = {}
-	teacher_time_constraints = json.loads(request.form['teachersXtimes'])
-	for teacher in teacher_time_constraints:
-		if str(teacher) not in teacher_constraints:
-			teacher_constraints[str(teacher)] = []
-		for constraint in teacher_time_constraints[teacher]:
-			teacher_constraints[teacher].append(str(constraint))
-
-	teachersXtimes = []
-	for teacher in teachers:
-		teacher_list = []
-		for time in times:
-			if teacher in teacher_constraints:
-				if time in teacher_constraints[teacher]:
-					teacher_list.append(1)
-				elif "not " + time in teacher_constraints[teacher]:
-					teacher_list.append(0)
-				else:
-					teacher_list.append(.5)
-			else:
-				teacher_list.append(.5)
-		teachersXtimes.append(teacher_list)
-	
-	room_constraints = {}
-	room_time_constraints = json.loads(request.form['roomsXtimes'])
-	for room in room_time_constraints:
-		if str(room) not in room_constraints:
-			room_constraints[str(room)] = []
-		for constraint in room_time_constraints[room]:
-			room_constraints[str(room)].append(str(constraint))
-	
-	roomsXtimes = []
-	for room in rooms:
-		room_list = []
-		for time in times:
-			if room in room_constraints:
-				if time in room_constraints[room]:
-					room_list.append(1)
-				elif "not " + time in room_constraints[room]:
-					room_list.append(0)
-				else:
-					room_list.append(.5)
-			else:
-				room_list.append(.5)
-		roomsXtimes.append(room_list)
-	
-	course_constraints = {}
-	course_time_constraints = json.loads(request.form['coursesXtimes'])
-	for time in course_time_constraints:
-		if str(time) not in course_constraints:
-			course_constraints[str(time)] = []
-		for constraint in course_time_constraints[time]:
-			course_constraints[str(time)].append(str(constraint))
-	
-	coursesXtimes = []
-	for course in courses:
-		course_list = []
-		for time in times:
-			if time in course_constraints:
-				if course in course_constraints[time]:
-					course_list.append(1)
-				elif "not " + course in course_constraints[time]:
-					course_list.append(0)
-				else:
-					course_list.append(.5)
-			else:
-				course_list.append(.5)
-		coursesXtimes.append(course_list)
+	teachersNumCourses = loads_byteified(request.form['teachersNumCourses'])
 	
 	lp = glpk.LPX()
 	lp.obj.maximize = True
@@ -252,89 +129,45 @@ def generate():
 			defineConstraint([te,ti], constraintName, 0, 1)
 
 	#Define constraints provided by tables
-	for i, row in enumerate(teachersXcourses):
-		teacher = teachers[i]	
-		cantTeachCourseIndexes = [courseIndex for courseIndex, val in enumerate(row) if val == 0]
-		cantTeachCourses = [courses[j] for j in cantTeachCourseIndexes]
-		for course in cantTeachCourses:	
-			constraintName = teacher+"CantTeachCourse"+course
-			defineConstraint([teacher,course], constraintName, 0, 0)
+	te_c_cons = loads_byteified(request.form['teachersXcourses'])
+	for teacher in teachers:
+		if teacher in te_c_cons:
+			for course in te_c_cons[teacher]:
+				magnitude = 0 if course[:3] == 'not' else 1
+				constraintName = teacher+"TeachCourse"+course
+				defineConstraint([teacher,course], constraintName, magnitude, magnitude)
+	
+	te_ti_cons = loads_byteified(request.form['teachersXtimes'])
+	for teacher in teachers:
+		if teacher in te_ti_cons:
+			for time in te_ti_cons[teacher]:
+				magnitude = 0 if time[:3] == 'not' else 1
+				constraintName = teacher+"TeachTime"+time
+				defineConstraint([teacher,time], constraintName, magnitude, magnitude)
 
-		mustTeachCourseIndexes = [courseIndex for courseIndex, val in enumerate(row) if val == 1]
-		mustTeachCourses = [courses[j] for j in mustTeachCourseIndexes]
-		for course in mustTeachCourses:	
-			constraintName = teacher+"MustTeachCourse"+course
-			defineConstraint([teacher,course], constraintName, 1, 1)
+	c_r_cons = loads_byteified(request.form['coursesXrooms'])
+	for room in rooms:
+		if room in c_r_cons:
+			for course in c_r_cons[room]:
+				magnitude = 0 if room[:3] == 'not' else 1
+				constraintName = course+"TaughtInRoom"+room
+				defineConstraint([course,room], constraintName, magnitude, magnitude)
 
-	#for i, row in enumerate(teachersXrooms):
-	#	teacher = teachers[i]	
-	#	cantTeachRoomIndexes = [roomIndex for roomIndex, val in enumerate(row) if val == 0]
-	#	cantTeachRoom = [rooms[j] for j in cantTeachRoomIndexes]
-	#	for room in cantTeachRoom:	
-	#		constraintName = teacher+"CantTeachRoom"+room
-	#		defineConstraint([teacher,room], constraintName, 0, 0)
+	c_ti_cons = loads_byteified(request.form['coursesXtimes'])
+	for time in times:
+		if time in c_ti_cons:
+			for course in c_ti_cons[time]:
+				magnitude = 0 if time[:3] == 'not' else 1
+				constraintName = course+"TaughtAtTime"+time
+				defineConstraint([course,time], constraintName, magnitude, magnitude)
 
-#		mustTeachRoomIndexes = [roomIndex for roomIndex, val in enumerate(row) if val == 1]
-#		mustTeachRoom = [rooms[j] for j in mustTeachRoomIndexes]
-#		for room in mustTeachRoom:	
-#			constraintName = teacher+"MustTeachRoom"+room
-#			defineConstraint([teacher,room], constraintName, 1, 1)
-
-	for i, row in enumerate(teachersXtimes):
-		teacher = teachers[i]	
-		cantTeachTimeIndexes = [timeIndex for timeIndex, val in enumerate(row) if val == 0]
-		cantTeachTime = [times[j] for j in cantTeachTimeIndexes]
-		for time in cantTeachTime:	
-			constraintName = teacher+"CantTeachTime"+time
-			defineConstraint([teacher,time], constraintName, 0, 0)
-
-		mustTeachTimeIndexes = [timeIndex for timeIndex, val in enumerate(row) if val == 1]
-		mustTeachTime = [times[j] for j in mustTeachTimeIndexes]
-		for time in mustTeachTime:	
-			constraintName = teacher+"MustTeachTime"+time
-			defineConstraint([teacher,time], constraintName, 1, 1)
-
-	for i, row in enumerate(coursesXrooms):
-		course = courses[i]	
-		cantBeTaughtInRoomIndexes = [roomIndex for roomIndex, val in enumerate(row) if val == 0]
-		cantBeTaughtInRoom = [rooms[j] for j in cantBeTaughtInRoomIndexes]
-		for room in cantBeTaughtInRoom:	
-			constraintName = course+"CantBeTaughtInRoom"+room
-			defineConstraint([course,room], constraintName, 0, 0)
-
-		mustBeTaughtInRoomIndexes = [roomIndex for roomIndex, val in enumerate(row) if val == 1]
-		mustBeTaughtInRoom = [rooms[j] for j in mustBeTaughtInRoomIndexes]
-		for room in mustBeTaughtInRoom:	
-			constraintName = course+"MustBeTaughtInRoom"+room
-			defineConstraint([course,room], constraintName, 1, 1)
-
-	for i, row in enumerate(coursesXtimes):
-		course = courses[i]	
-		cantBeTaughtAtTimeIndexes = [timeIndex for timeIndex, val in enumerate(row) if val == 0]
-		cantBeTaughtAtTime = [times[j] for j in cantBeTaughtAtTimeIndexes]
-		for time in cantBeTaughtAtTime:	
-			constraintName = course+"CantBeTaughtAtTime"+time
-			defineConstraint([course,time], constraintName, 0, 0)
-
-		mustBeTaughtAtTimeIndexes = [timeIndex for timeIndex, val in enumerate(row) if val == 1]
-		mustBeTaughtAtTime = [times[j] for j in mustBeTaughtAtTimeIndexes]
-		for time in mustBeTaughtAtTime:	
-			constraintName = course+"MustBeTaughtAtTime"+time
-			defineConstraint([course,time], constraintName, 1, 1)
-
-	for i, row in enumerate(roomsXtimes):
-		room = rooms[i]	
-		cantOccupyAtTimeIndexes = [timeIndex for timeIndex, val in enumerate(row) if val == 0]
-		cantOccupyAtTime = [times[j] for j in cantOccupyAtTimeIndexes]
-		for time in cantOccupyAtTime:	
-			constraintName = room+"CantOccupyAtTime"+time
-			defineConstraint([room,time], constraintName, 0, 0)
-
-		mustOccupyAtTimeIndexes = [timeIndex for timeIndex, val in enumerate(row) if val == 1]
-		mustOccupyAtTime = [times[j] for j in mustOccupyAtTimeIndexes]
-		for time in mustOccupyAtTime:	
-			constraintName = room+"MustOccupyAtTime"+time
-			defineConstraint([room,time], constraintName, 1, 1)
+	r_ti_cons = loads_byteified(request.form['roomsXtimes'])
+	for room in rooms:
+		if room in r_ti_cons:
+			for time in r_ti_cons[room]:
+				magnitude = 0 if time[:3] == 'not' else 1
+				constraintName = room+"OccupyAtTime"+time
+				defineConstraint([room,time], constraintName, magnitude, magnitude)
 
 	#Determine overlapping times
 	def whoOverlap(dayList):
@@ -435,25 +268,6 @@ def generate():
 		print "FAILURE"
 		return "nofeas", 400
 
-	
-        #print "---OBJECTIVE DESIRABILITY VALUES---"
-	for te in teachers:
-		for c in courses:
-			for r in rooms:
-				for ti in times:
-					colName = te+' - '+c+' - '+r+' - '+ti
-					print colName, lp.obj[colName]
-	print
-
-	print "---CONSTRAINTS---"
-	for row in lp.rows:
-		print row.name+" has a sum bound to be between",row.bounds[0], "and",row.bounds[1]
-
-	print
-
-	print "---SOLUTION---"
-
-	#string_solution = ""
 	results = {"results": []}
 	for c in lp.cols:
 		if c.primal!=0:
@@ -462,8 +276,6 @@ def generate():
 			#to_add = "{} = {}".format(c.name, c.primal)
 			results['results'].append(to_add)
 			#string_solution += to_add
-
-	print results
 
     	return json.dumps(results);
 
